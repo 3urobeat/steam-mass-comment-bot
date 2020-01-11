@@ -8,8 +8,8 @@ const steamIDsToCommentOn = [
 
 //Add just one Comment inside the brackets to only post this specific comment on all profiles.
 //Add different comments like ["Comment1","Comment2","Comment3"] to randomly select a comment for each profile.
-
 const comments = ["Comment1","Comment2","Comment3"];
+//End
 
 const SteamUser = require('steam-user');
 const SteamCommunity = require('steamcommunity');
