@@ -1,0 +1,19 @@
+{
+  "name": "mass-comment-bot",
+  "version": "1.0.0",
+  "description": "A bot for commenting a specific or a random comment from a collection on a bigger amount of steam accounts.",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^6.1.0",
+    "fs": "0.0.1-security",
+    "nodemon": "^1.19.1",
+    "steam-user": "^4.12.2",
+    "steamcommunity": "^3.40.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "3urobeat",
+  "license": "GPL-3.0"
+}
