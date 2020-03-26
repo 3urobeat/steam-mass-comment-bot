@@ -3,7 +3,7 @@
 	<strong>Comment with a few clicks under a bunch of profiles!</strong><br />See how to set up the bot and customize it below.<br /><br />
 </div>
 
-**If you want, you can donate a few bucks on my [Patreon](https://www.patreon.com/3urobeat)! I would really appreciate it!**
+**If you want, you can donate a few bucks on my [Patreon](https://www.patreon.com/3urobeat) or [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)! I would really appreciate it!**
 
 This bot features two customizeable arrays/lists, one for all steamIDs of the profiles were the bot will comment and one for a selection of comments.  
 You can either choose to leave the same comment under each profile or select a random comment for each profile.  
