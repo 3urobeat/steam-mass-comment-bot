@@ -4,11 +4,11 @@
   "description": "A bot for commenting a specific or a random comment from a collection on a bigger amount of steam accounts.",
   "main": "index.js",
   "dependencies": {
-    "eslint": "^6.1.0",
+    "eslint": "^6.8.0",
     "fs": "0.0.1-security",
-    "nodemon": "^1.19.1",
-    "steam-user": "^4.12.2",
-    "steamcommunity": "^3.40.0"
+    "nodemon": "^1.19.4",
+    "steam-user": "^4.13.2",
+    "steamcommunity": "^3.41.3"
   },
   "devDependencies": {},
   "scripts": {
