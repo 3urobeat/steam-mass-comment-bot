@@ -1,19 +1,23 @@
 {
-  "name": "mass-comment-bot",
-  "version": "1.0.0",
-  "description": "A bot for commenting a specific or a random comment from a collection on a bigger amount of steam accounts.",
-  "main": "index.js",
-  "dependencies": {
-    "eslint": "^6.8.0",
-    "fs": "0.0.1-security",
-    "nodemon": "^1.19.4",
-    "steam-user": "^4.13.2",
-    "steamcommunity": "^3.41.3"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "3urobeat",
-  "license": "GPL-3.0"
+    "name": "steam-mass-comment-bot",
+    "version": "2.0.0",
+    "description": "Comment with a few clicks under a ton of steam profiles! ",
+    "main": "index.js",
+    "dependencies": {
+        "output-logger": "^2.0.0",
+        "steam-user": "^4.20.2",
+        "steamcommunity": "^3.43.1",
+        "steamid-resolver": "^1.2.2"
+    },
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "3urobeat",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/HerrEurobeat/steam-mass-comment-bot/issues"
+    },
+    "homepage": "https://github.com/HerrEurobeat",
+    "repository": "https://github.com/HerrEurobeat/steam-mass-comment-bot"
 }
