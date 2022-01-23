@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 23.01.2022 14:09:01
+ * Last Modified: 23.01.2022 16:31:15
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -15,10 +15,9 @@
  */
 
 
-const logger          = require("output-logger");
-const steamidResolver = require("steamid-resolver");
-const SteamUser       = require("steam-user");
-const SteamCommunity  = require("steamcommunity");
+const logger         = require("output-logger");
+const SteamUser      = require("steam-user");
+const SteamCommunity = require("steamcommunity");
 
 const logininfo = require("../logininfo.json");
 const config    = require("../config.json");
@@ -64,13 +63,24 @@ module.exports.run = () => {
     })
 
     bot.on("loggedOn", () => {
-        logger("", "\n", true);
-        logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-        logger("", `${logininfo.accountName} logged in!`, true);
-        logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`)
-        logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-        logger("", "\n", true);
-    })
+        logger("info", "Account logged in!");
 
+        //Get ids
+        logger("info", "Getting profile & group ids from URLs in config...", false, true, logger.animation("loading"));
 
+        var loadDestinations = require("./helpers/loadDestinations.js");
+
+        loadDestinations.loadProfiles(logger, (profiles) => {
+            loadDestinations.loadGroups(logger, (groups) => {
+
+                logger("", "\n", true);
+                logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                logger("", `Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
+                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`)
+                logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                logger("", "\n", true);
+
+            })
+        })
+    });
 }
