@@ -7,6 +7,7 @@
         "output-logger": "^2.0.0",
         "steam-user": "^4.20.2",
         "steamcommunity": "^3.43.1",
+        "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
     },
     "scripts": {
