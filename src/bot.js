@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 23.01.2022 16:31:15
+ * Last Modified: 23.01.2022 16:37:43
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -18,6 +18,7 @@
 const logger         = require("output-logger");
 const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
+const SteamID        = require("steamid");
 
 const logininfo = require("../logininfo.json");
 const config    = require("../config.json");
@@ -65,6 +66,9 @@ module.exports.run = () => {
     bot.on("loggedOn", () => {
         logger("info", "Account logged in!");
 
+        //start playing games if enabled
+        if (config.playingGames.length > 0) bot.gamesPlayed(config.playingGames)
+
         //Get ids
         logger("info", "Getting profile & group ids from URLs in config...", false, true, logger.animation("loading"));
 
@@ -83,4 +87,25 @@ module.exports.run = () => {
             })
         })
     });
+
+    
+    //Set cookies to be able to comment later
+    bot.on("webSession", (sessionID, cookies) => { 
+        community.setCookies(cookies);
+    });
+
+
+    //Respond with afkMessage if enabled in config
+    bot.on('friendMessage', (steamID, message) => {
+        var steamID64 = new SteamID(String(steamID)).getSteamID64()
+
+        logger("info", `Friend message from ${steamID64}: ${message}`)
+
+        if (config.afkMessage.length > 0) {
+            logger("info", "Responding with: " + config.afkMessage)
+
+            bot.chat.sendFriendMessage(steamID, config.afkMessage)
+        }
+        
+    })
 }
