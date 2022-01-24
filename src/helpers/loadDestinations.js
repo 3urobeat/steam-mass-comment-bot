@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 15:28:34
  * Author: 3urobeat
  * 
- * Last Modified: 24.01.2022 16:41:46
+ * Last Modified: 24.01.2022 16:45:14
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -61,9 +61,9 @@ module.exports.loadProfiles = (logger, callback) => {
 
             fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
                 if (err) logger("err", "Error writing resolved profile ids to config: " + err)
-            })
 
-            callback(profiles);
+                callback(profiles);
+            })
         }
 
     }, 500);
@@ -111,9 +111,9 @@ module.exports.loadProfiles = (logger, callback) => {
 
             fs.writeFile("./config.json", JSON.stringify(config, null, 4), (err) => {
                 if (err) logger("err", "Error writing resolved group ids to config: " + err)
-            })
 
-            callback(groups);
+                callback(groups);
+            })
         }
         
     }, 500);
