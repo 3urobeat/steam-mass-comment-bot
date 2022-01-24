@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 24.01.2022 16:43:06
+ * Last Modified: 24.01.2022 17:01:59
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -58,10 +58,10 @@ module.exports.run = () => {
     //Start logging in
     logger("info", "Logging in...", false, false, logger.animation("loading"));
 
-    bot.logOn({
+    /* bot.logOn({
         accountName: logininfo.accountName,
         password: logininfo.password
-    })
+    }) */
 
     bot.on("loggedOn", () => {
         logger("info", "Account logged in!");
@@ -84,15 +84,33 @@ module.exports.run = () => {
                 }
 
                 //Show ready message
-                logger("", "\n", true);
-                logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                logger("", "", true);
+                logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
                 logger("", `Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
-                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`);
-                logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                logger("", "\n", true);
+                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
+                logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                logger("", "", true);
 
-            })
-        })
+
+                //Start commenting on profiles
+                setTimeout(() => {
+                    if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
+
+                    handleProfileComments(profiles, (failedProfiles) => {
+                        if (groups.length > 0) logger("info", "Starting to comment on groups...");
+                        
+                        handleGroupComments(groups, (failedGroups) => {
+                            logger("info", "Finished commenting!\n");
+                            
+                            if (failedProfiles.length > 0) logger("info", "Failed profiles: " + failedProfiles.join("\n"));
+                            if (failedGroups.length   > 0) logger("info", "\nFailed groups: " + failedGroups.join("\n"));
+    
+                            logger("info", "Exiting...");
+                        });
+                    });
+                }, 5000);
+            });
+        });
     });
 
     
@@ -114,5 +132,59 @@ module.exports.run = () => {
             bot.chat.sendFriendMessage(steamID, config.afkMessage)
         }
         
-    })
+    });
+
+
+    /**
+     * Handles commenting on all profiles
+     * @param {Array} profiles Array of profiles to comment on
+     */
+    function handleProfileComments(profiles, callback) {
+        var failedProfiles = [];
+
+        if (profiles.length == 0) return callback(failedProfiles);
+
+        profiles.forEach((e, i) => {
+            setTimeout(() => {
+                logger("info", `Commenting on profile ${e}...`, false, false, logger.animation("loading"));
+
+                require("./helpers/commentGroup.js").commentGroup(e, (err) => {
+                    if (err) {
+                        logger("warn", `Comment in group ${e} failed! Error: ${err}`)
+                        failedProfiles.push(e);
+                    }
+
+                    //Check if we processed all profiles and make a callback
+                    if (profiles.length == i + 1) callback(failedProfiles);
+                })
+            }, config.commentdelay * i);
+        });
+    }
+
+
+    /**
+     * Handles commenting in all groups
+     * @param {Array} groups Array of groups to comment in
+     */
+    function handleGroupComments(groups, callback) {
+        var failedGroups = [];
+
+        if (groups.length == 0) return callback(failedGroups);
+
+        groups.forEach((e, i) => {
+            setTimeout(() => {
+                logger("info", `Commenting in group ${e}...`, false, false, logger.animation("loading"));
+
+                require("./helpers/commentGroup.js").commentGroup(e, (err) => {
+                    if (err) {
+                        logger("warn", `Comment in group ${e} failed! Error: ${err}`)
+                        failedGroups.push(e);
+                    }
+
+                    //Check if we processed all profiles and make a callback
+                    if (groups.length == i + 1) callback(failedGroups);
+                })
+            }, config.commentdelay * i);
+        });
+    }
 }
