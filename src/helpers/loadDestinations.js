@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 15:28:34
  * Author: 3urobeat
  * 
- * Last Modified: 23.01.2022 16:30:01
+ * Last Modified: 24.01.2022 16:41:46
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -27,6 +27,7 @@ module.exports.loadProfiles = (logger, callback) => {
     var profiles = [];
     var resolverCalls = 0;
     var skipped = [];
+    var emptyStr = 0;
 
     config.profiles.forEach((e) => {
         if (String(e).includes("steamcommunity.com/profiles") || String(e).includes("steamcommunity.com/id")) {
@@ -44,13 +45,14 @@ module.exports.loadProfiles = (logger, callback) => {
             }, 500 * resolverCalls);
         } else {
             if (e != "") profiles.push(e);
+                else emptyStr++;
         }
     })
     
 
     var profileInterval = setInterval(() => {
         
-        if (profiles.length + skipped.length == config.profiles.length) {
+        if (profiles.length + skipped.length + emptyStr == config.profiles.length) {
             clearInterval(profileInterval);
 
             //Write result to make it 
@@ -75,6 +77,7 @@ module.exports.loadProfiles = (logger, callback) => {
     var groups = [];
     var resolverCalls = 0;
     var skipped = [];
+    var emptyStr = 0;
 
     config.groups.forEach((e) => {
         if (String(e).includes("steamcommunity.com/groups")) {
@@ -92,13 +95,14 @@ module.exports.loadProfiles = (logger, callback) => {
             }, 500 * resolverCalls);
         } else {
             if (e != "") groups.push(e);
+                else emptyStr++;
         }
     })
 
     
     var groupInterval = setInterval(() => {
         
-        if (groups.length + skipped.length == config.groups.length) {
+        if (groups.length + skipped.length + emptyStr == config.groups.length) {
             clearInterval(groupInterval);
 
             //Write result to make it 

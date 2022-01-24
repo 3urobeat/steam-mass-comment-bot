@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 23.01.2022 16:37:43
+ * Last Modified: 24.01.2022 16:43:06
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -77,10 +77,17 @@ module.exports.run = () => {
         loadDestinations.loadProfiles(logger, (profiles) => {
             loadDestinations.loadGroups(logger, (groups) => {
 
+                //Check if nothing was found to comment on
+                if (profiles.length == 0 && groups.length == 0) {
+                    logger("error", "No profiles and groups found to comment on/in! Exiting...");
+                    process.exit(1);
+                }
+
+                //Show ready message
                 logger("", "\n", true);
                 logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
                 logger("", `Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
-                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`)
+                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`);
                 logger("*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
                 logger("", "\n", true);
 
