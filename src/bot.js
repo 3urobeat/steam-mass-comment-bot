@@ -90,7 +90,6 @@ module.exports.run = () => {
                         process.exit(1);
                     }
 
-                logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
                     //Show ready message
                     logger("", "", true);
                     logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
@@ -108,7 +107,6 @@ module.exports.run = () => {
                         handleProfileComments(profiles, quotes, (failedProfiles) => {
                             if (groups.length > 0) logger("info", "Starting to comment on groups...");
                             
-                            if (failedGroups.length   > 0) logger("info", "\nFailed groups: " + failedGroups.join("\n"));
                             handleGroupComments(groups, quotes, (failedGroups) => {
                                 logger("info", "Finished commenting!\n");
                                 
@@ -118,7 +116,6 @@ module.exports.run = () => {
                                 logger("info", "Exiting...");
                             });
                         });
-                }, 5000);
                     }, 5000);
                 });
             });
@@ -150,7 +147,9 @@ module.exports.run = () => {
     /**
      * Handles commenting on all profiles
      * @param {Array} profiles Array of profiles to comment on
+     * @param {Array} quotes Array of quotes
      */
+    function handleProfileComments(profiles, quotes, callback) {
         var failedProfiles = [];
 
         if (profiles.length == 0) return callback(failedProfiles);
@@ -159,7 +158,7 @@ module.exports.run = () => {
             setTimeout(() => {
                 logger("info", `Commenting on profile ${e}...`, false, false, logger.animation("loading"));
 
-                require("./helpers/commentGroup.js").commentGroup(e, (err) => {
+                require("./helpers/commentGroup.js").commentGroup(e, quotes, (err) => {
                     if (err) {
                         logger("warn", `Comment in group ${e} failed! Error: ${err}`)
                         failedProfiles.push(e);
@@ -176,8 +175,9 @@ module.exports.run = () => {
     /**
      * Handles commenting in all groups
      * @param {Array} groups Array of groups to comment in
+     * @param {Array} quotes Array of quotes
      */
-    function handleGroupComments(groups, callback) {
+    function handleGroupComments(groups, quotes, callback) {
         var failedGroups = [];
 
         if (groups.length == 0) return callback(failedGroups);
@@ -186,7 +186,7 @@ module.exports.run = () => {
             setTimeout(() => {
                 logger("info", `Commenting in group ${e}...`, false, false, logger.animation("loading"));
 
-                require("./helpers/commentGroup.js").commentGroup(e, (err) => {
+                require("./helpers/commentGroup.js").commentGroup(e, quotes, (err) => {
                     if (err) {
                         logger("warn", `Comment in group ${e} failed! Error: ${err}`)
                         failedGroups.push(e);
