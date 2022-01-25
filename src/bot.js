@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 24.01.2022 17:01:59
+ * Last Modified: 25.01.2022 12:07:36
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -56,15 +56,15 @@ module.exports.run = () => {
 
 
     //Start logging in
-    logger("info", "Logging in...", false, false, logger.animation("loading"));
+    logger("info", "Logging in...", false, false);
 
-    /* bot.logOn({
+    bot.logOn({
         accountName: logininfo.accountName,
         password: logininfo.password
-    }) */
+    })
 
     bot.on("loggedOn", () => {
-        logger("info", "Account logged in!");
+        logger("info", "\nAccount logged in!");
 
         //start playing games if enabled
         if (config.playingGames.length > 0) bot.gamesPlayed(config.playingGames)
@@ -76,39 +76,51 @@ module.exports.run = () => {
 
         loadDestinations.loadProfiles(logger, (profiles) => {
             loadDestinations.loadGroups(logger, (groups) => {
+                require("./helpers/getQuote.js").getQuote(logger, (quotes) => {
 
-                //Check if nothing was found to comment on
-                if (profiles.length == 0 && groups.length == 0) {
-                    logger("error", "No profiles and groups found to comment on/in! Exiting...");
-                    process.exit(1);
-                }
+                    //Check if nothing was found to comment on
+                    if (profiles.length == 0 && groups.length == 0) {
+                        logger("error", "No profiles and groups found to comment on/in! Exiting...");
+                        process.exit(1);
+                    }
 
-                //Show ready message
-                logger("", "", true);
+                    //Check if no quotes were provided
+                    if (quotes.length == 0) {
+                        logger("error", "No comments found in comments.txt! Please provide messages I can choose from in comments.txt! Exiting...");
+                        process.exit(1);
+                    }
+
                 logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                logger("", `Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
-                logger("", `Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
-                logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                logger("", "", true);
+                    //Show ready message
+                    logger("", "", true);
+                    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                    logger("", `> Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
+                    logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
+                    logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
+                    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+                    logger("", "", true);
 
 
-                //Start commenting on profiles
-                setTimeout(() => {
-                    if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
+                    //Start commenting on profiles
+                    setTimeout(() => {
+                        if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
 
-                    handleProfileComments(profiles, (failedProfiles) => {
-                        if (groups.length > 0) logger("info", "Starting to comment on groups...");
-                        
-                        handleGroupComments(groups, (failedGroups) => {
-                            logger("info", "Finished commenting!\n");
+                        handleProfileComments(profiles, quotes, (failedProfiles) => {
+                            if (groups.length > 0) logger("info", "Starting to comment on groups...");
                             
-                            if (failedProfiles.length > 0) logger("info", "Failed profiles: " + failedProfiles.join("\n"));
                             if (failedGroups.length   > 0) logger("info", "\nFailed groups: " + failedGroups.join("\n"));
-    
-                            logger("info", "Exiting...");
+                            handleGroupComments(groups, quotes, (failedGroups) => {
+                                logger("info", "Finished commenting!\n");
+                                
+                                if (failedProfiles.length > 0) logger("info", "Failed profiles: " + failedProfiles.join("\n"));
+                                if (failedGroups.length   > 0) logger("info", "\nFailed groups: " + failedGroups.join("\n"));
+        
+                                logger("info", "Exiting...");
+                            });
                         });
-                    });
                 }, 5000);
+                    }, 5000);
+                });
             });
         });
     });
@@ -139,7 +151,6 @@ module.exports.run = () => {
      * Handles commenting on all profiles
      * @param {Array} profiles Array of profiles to comment on
      */
-    function handleProfileComments(profiles, callback) {
         var failedProfiles = [];
 
         if (profiles.length == 0) return callback(failedProfiles);
