@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 25.01.2022 13:13:28
+ * Last Modified: 25.01.2022 13:54:25
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -131,8 +131,14 @@ module.exports.run = () => {
                                 commentFile.commentGroup(groups, quotes, logger, community, (failedGroups) => {
                                     logger("info", "Finished commenting!\n");
                                     
-                                    if (failedProfiles.length > 0) logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
-                                    if (failedGroups.length   > 0) logger("info", "\nFailed groups: \n" + failedGroups.join("\n"));
+                                    if (failedProfiles.length > 0) {
+                                        logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
+                                        logger("", "", true);
+                                    }
+                                    if (failedGroups.length   > 0) {
+                                        logger("info", "Failed groups: \n" + failedGroups.join("\n"));
+                                        logger("", "", true);
+                                    }
             
                                     logger("info", "Exiting...");
                                     process.exit(0);
