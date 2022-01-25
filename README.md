@@ -1,46 +1,93 @@
-<div align="center">
-	<h1 align="center">~ Steam Mass Comment Bot ~</h1>
-	<strong>Comment with a few clicks under a bunch of profiles!</strong><br />See how to set up the bot and customize it below.<br /><br />
+<div align="center" markdown=1>
+	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
+	<strong>Comment with a few clicks under a ton of steam profiles & groups!</strong>
+	<br>See how to set up the bot and customize it below.<br>
+	<p></p>
 </div>
 
-**If you want, you can donate a few bucks on my [Patreon](https://www.patreon.com/3urobeat) or [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VAVVKE4L962H6&source=url)! I would really appreciate it!**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
+[![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-mass-comment-bot)
+[![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)
+<p align="center">Click on a badge to learn more.</p>
 
-This bot features two customizeable arrays/lists, one for all steamIDs of the profiles were the bot will comment and one for a selection of comments.  
-You can either choose to leave the same comment under each profile or select a random comment for each profile.  
-Continue reading for a detailed setup guide.  
+&nbsp;
 
-## Requirements
+**Disclaimer!**  
+> I, the developer, am not responsible and cannot be held liable for what you do with this bot.  
+> Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.  
+  
+&nbsp;
 
-- `node` (https://nodejs.org)
+## **Download:**
+Click here: [Download](https://github.com/HerrEurobeat/steam-mass-comment-bot/archive/master.zip)  
+Extract the zip and open the `steam-mass-comment-bot` folder.  
+  
+You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
+To check your version number if you already have node installed, type `node --version` in your console or terminal.  
 
-Only necessary if you want to download via command prompt:
-- `git` command line ([Windows](https://git-scm.com/download/win)|[Linux](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)|[MacOS](https://git-scm.com/download/mac)) installed
+&nbsp;
 
-## Downloading
+## **Setup:**
 
-Click here: [Download](https://github.com/HerrEurobeat/steam-bots/archive/master.zip)  
-Extract the zip and open the `mass-comment-bot` folder.
+Open `logininfo.json` with a text editor and fill in the username and password of your account into the provided brackets.  
+Save and exit.
 
-## Setting the bot up
+**The login data will _only_ be used to leave comments under the profiles and groups set in `config.json` with one of the provided comments in `comments.txt`.**
 
-Rename the `logininfo.json.example` to `logininfo.json`.  
-Open the file with a text editor and fill out the user name and password brackets with your steam login data.  
+Open `config.json` with a text editor.  
+Put in the profile links or steamID64s you want to comment on into the `profiles` array.  
+Put in the group links or steamID64s you want to comment in into the `groups` array.  
+  
+Make sure you are following this syntax when filling the arrays:  
+```
+"profiles": [
+	"ID1",
+	"steamcommunity.com/id/name2",
+	"https://steamcommunity.com/profiles/ID3"
+]
+```  
 
-**The login data will _only_ be used to leave comments under the profiles of the provided steamIDs with one of the provided comments.**
+Take a look below at *Troubleshooting* if you experience issues.  
 
-Open `index.js` with a text editor. At the top of the file will be two arrays/lists, called `steamIDsToCommentOn` and `comments`.  
-Fill out the two arrays like explained in the comments above the two arrays.  
+If you want to set a custom status and play games when running the bot, fill in the `playingGames` array in the config.  
+The array works like this: `["custom game text", game id, game id]`  
+Empty the array (like this `"playingGames": []`) if the bot should not change your online appearance.  
+  
+If the bot should respond with a message if someone messages you while the bot is running, set a message as `afkMessage`.  
+Empty the brackets (like this `"afkMessage": ""`) to disable the feature.  
 
-The bot is now setup. It will work through the steamIDs from top to bottom and leave a comment on each profile with a delay of 5 seconds.  
-This delay shouldn't get you a cooldown from steam for too many comments but if it will happen the bot will stop and give you an array of all remaining/failed profiles. You can retry them later.  
-Everything in the console will be saved to output.txt!  
+The `commentdelay` value sets the time in ms the bot should wait between comments. I suggest leaving it at the default value.  
+Setting it too low will result in cooldown errors because Steam considers your account as spamming.  
+Should you recieve cooldown errors with the default values, increase the value and try again.  
 
-## Starting the bot
+&nbsp;  
 
-To start the bot, double click run.bat on windows or open a command prompt or power shell and navigate to the bot folder and type:  
-`node index.js`
+## **Starting the bot:**
 
-If you have the Steam Guard enabled, the bot will ask for your authenticator code.  
-The bot will now start and you should see him starting to work!  
+Please open a console window or terminal in the current folder.  
+Run the command `npm install` and wait for it to complete. This will install al necessary packages for the bot.  
 
-If a error should happen it will be saved in the output.txt. You can open a new issue on GitHub and post the error with description here.  
+When done, type `node index.js` to start the bot.  
+It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each profile and group you set in `config.json` after eachother.  
+  
+If you are on Windows and don't know how to open a console window in the current folder:  
+- Open the folder of the bot with your Explorer  
+- Click on the blue `File` button in in the top left  
+- Click on the `Open PowerShell` or `Open CMD` entry and a console window should appear
+
+&nbsp;
+
+## **Troubleshooting:**
+
+If you don't follow the syntax from above you will get an error because the bot is unable to read the file.  
+If you are getting a syntax mistake error then check for these common mistakes:  
+- forgot to add a comma to the end of the line?
+- the very last line must not have a comma (look at the example above)
+- forgot brackets `"` when writing something?  
+
+&nbsp;  
+If you get another error or have questions, please [open an issue here](https://github.com/HerrEurobeat/steam-mass-comment-bot/issues/new).  
+Everything that appears in your console/terminal window will also be saved to the `output.txt` file. Please attach the content of your last run to your issue to make it easier for me to troubleshoot.  
+
