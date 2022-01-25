@@ -1,7 +1,7 @@
 {
     "name": "steam-mass-comment-bot",
     "version": "2.0.0",
-    "description": "Comment with a few clicks under a ton of steam profiles! ",
+    "description": "Comment with a few clicks under a ton of steam profiles & groups!",
     "main": "index.js",
     "dependencies": {
         "output-logger": "^2.0.0",
