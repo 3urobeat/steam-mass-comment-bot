@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 25.01.2022 12:07:36
+ * Last Modified: 25.01.2022 12:38:13
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -64,7 +64,8 @@ module.exports.run = () => {
     })
 
     bot.on("loggedOn", () => {
-        logger("info", "\nAccount logged in!");
+        logger("", "", true);
+        logger("info", "Account logged in!");
 
         //start playing games if enabled
         if (config.playingGames.length > 0) bot.gamesPlayed(config.playingGames)
@@ -74,7 +75,7 @@ module.exports.run = () => {
 
         var loadDestinations = require("./helpers/loadDestinations.js");
 
-        loadDestinations.loadProfiles(logger, (profiles) => {
+        loadDestinations.loadProfiles(logger, (profiles) => { //sorry for the slight callback hell that is now coming
             loadDestinations.loadGroups(logger, (groups) => {
                 require("./helpers/getQuote.js").getQuote(logger, (quotes) => {
 
@@ -93,7 +94,7 @@ module.exports.run = () => {
                     //Show ready message
                     logger("", "", true);
                     logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                    logger("", `> Logged in and loaded ${profiles.length + groups.length} IDs!`, true);
+                    logger("", `> Logged in as ${logininfo.accountName} and loaded ${profiles.length + groups.length} IDs!`, true);
                     logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
                     logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
                     logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
@@ -104,17 +105,22 @@ module.exports.run = () => {
                     setTimeout(() => {
                         if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
 
-                        handleProfileComments(profiles, quotes, (failedProfiles) => {
+                        const commentFile = require("./helpers/comment.js");
+
+                        commentFile.commentProfile(profiles, quotes, logger, community, (failedProfiles) => {
                             if (groups.length > 0) logger("info", "Starting to comment on groups...");
                             
-                            handleGroupComments(groups, quotes, (failedGroups) => {
-                                logger("info", "Finished commenting!\n");
-                                
-                                if (failedProfiles.length > 0) logger("info", "Failed profiles: " + failedProfiles.join("\n"));
-                                if (failedGroups.length   > 0) logger("info", "\nFailed groups: " + failedGroups.join("\n"));
-        
-                                logger("info", "Exiting...");
-                            });
+                            setTimeout(() => {
+                                commentFile.commentGroup(groups, quotes, logger, community, (failedGroups) => {
+                                    logger("info", "Finished commenting!\n");
+                                    
+                                    if (failedProfiles.length > 0) logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
+                                    if (failedGroups.length   > 0) logger("info", "\nFailed groups: \n" + failedGroups.join("\n"));
+            
+                                    logger("info", "Exiting...");
+                                    process.exit(0);
+                                });
+                            }, config.commentdelay);
                         });
                     }, 5000);
                 });
@@ -142,60 +148,4 @@ module.exports.run = () => {
         }
         
     });
-
-
-    /**
-     * Handles commenting on all profiles
-     * @param {Array} profiles Array of profiles to comment on
-     * @param {Array} quotes Array of quotes
-     */
-    function handleProfileComments(profiles, quotes, callback) {
-        var failedProfiles = [];
-
-        if (profiles.length == 0) return callback(failedProfiles);
-
-        profiles.forEach((e, i) => {
-            setTimeout(() => {
-                logger("info", `Commenting on profile ${e}...`, false, false, logger.animation("loading"));
-
-                require("./helpers/commentGroup.js").commentGroup(e, quotes, (err) => {
-                    if (err) {
-                        logger("warn", `Comment in group ${e} failed! Error: ${err}`)
-                        failedProfiles.push(e);
-                    }
-
-                    //Check if we processed all profiles and make a callback
-                    if (profiles.length == i + 1) callback(failedProfiles);
-                })
-            }, config.commentdelay * i);
-        });
-    }
-
-
-    /**
-     * Handles commenting in all groups
-     * @param {Array} groups Array of groups to comment in
-     * @param {Array} quotes Array of quotes
-     */
-    function handleGroupComments(groups, quotes, callback) {
-        var failedGroups = [];
-
-        if (groups.length == 0) return callback(failedGroups);
-
-        groups.forEach((e, i) => {
-            setTimeout(() => {
-                logger("info", `Commenting in group ${e}...`, false, false, logger.animation("loading"));
-
-                require("./helpers/commentGroup.js").commentGroup(e, quotes, (err) => {
-                    if (err) {
-                        logger("warn", `Comment in group ${e} failed! Error: ${err}`)
-                        failedGroups.push(e);
-                    }
-
-                    //Check if we processed all profiles and make a callback
-                    if (groups.length == i + 1) callback(failedGroups);
-                })
-            }, config.commentdelay * i);
-        });
-    }
 }
