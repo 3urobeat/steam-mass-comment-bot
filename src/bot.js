@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  * 
- * Last Modified: 25.01.2022 12:38:13
+ * Last Modified: 25.01.2022 13:13:28
  * Modified By: 3urobeat
  * 
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -20,9 +20,10 @@ const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
 const SteamID        = require("steamid");
 
-const logininfo = require("../logininfo.json");
-const config    = require("../config.json");
-const data      = require("./data.json");
+const data = require("./data.json");
+
+var config;
+var logininfo;
 
 
 /**
@@ -46,6 +47,22 @@ module.exports.run = () => {
     logger("info", `Starting steam-mass-comment-bot v${data.version} by 3urobeat`, true);
     logger("", "---------------------------------------------------------\n", true);
 
+
+    //Try loading files and show custom error message if unable to do so
+    try {
+        config = require("../config.json");
+    } catch (err) {
+        logger("error", `Error trying to read config.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly as explained here: https://github.com/HerrEurobeat/steam-mass-comment-bot#setup. Exiting...`, true);
+        process.exit(1);
+    }
+
+    try {
+        logininfo = require("../logininfo.json");
+    } catch (err) {
+        logger("error", `Error trying to read logininfo.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly. Exiting...`, true);
+        process.exit(1);
+    }
+    
 
     //Display commentdelay warning message if too low
     if (config.commentdelay < 5000) logger("warn", "I strongly advise not setting the commentdelay below 5000ms!\n       You might be running in danger of getting banned for spamming or will at least get a cooldown rather quickly.")
