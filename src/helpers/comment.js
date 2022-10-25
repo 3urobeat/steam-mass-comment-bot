@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 25.10.2022 14:55:40
+ * Last Modified: 25.10.2022 15:32:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -34,6 +34,9 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
 
     if (profiles.length == 0) return callback(failedProfiles);
 
+    // Create a new 0% progress bar
+    logger.createProgressBar();
+
     profiles.forEach((e, i) => {
         setTimeout(() => {
             logger("info", `Commenting on profile ${e}...`, false, false, logger.animation("loading"));
@@ -49,6 +52,9 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
                         process.exit(1);
                     }
                 }
+
+                // Calculate progress and update progress bar
+                logger.setProgressBar((i + 1) / profiles.length * 100);
 
                 // Check if we processed all profiles and make a callback
                 if (profiles.length == i + 1) callback(failedProfiles);
@@ -70,6 +76,9 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
 
     if (groups.length == 0) return callback(failedGroups);
 
+    // Create a new 0% progress bar
+    logger.createProgressBar();
+
     groups.forEach((e, i) => {
         setTimeout(() => {
             logger("info", `Commenting in group ${e}...`, false, false, logger.animation("loading"));
@@ -85,6 +94,9 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
                         process.exit(1);
                     }
                 }
+
+                // Calculate progress and update progress bar
+                logger.setProgressBar((i + 1) / groups.length * 100);
 
                 // Check if we processed all profiles and make a callback
                 if (groups.length == i + 1) callback(failedGroups);
