@@ -4,7 +4,7 @@
  * Created Date: 25.01.2022 11:39:11
  * Author: 3urobeat
  *
- * Last Modified: 25.01.2022 11:58:08
+ * Last Modified: 25.10.2022 14:55:45
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -21,7 +21,7 @@ const fs = require("fs");
  * Gets a random quote from comments.txt
  * @param {function} [callback] Called with `quotes` (Array) on completion.
  */
-module.exports.getQuote = (logger, callback) => {
+module.exports.getQuote = (callback) => {
     logger("info", "Loading quotes from comments.txt...", false, true);
 
     var quotes = [];

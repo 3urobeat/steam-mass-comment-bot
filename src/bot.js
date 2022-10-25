@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 19.10.2022 17:07:37
+ * Last Modified: 25.10.2022 14:56:43
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -38,6 +38,8 @@ module.exports.run = () => {
         outputfile: "./output.txt",
         animationdelay: 250
     });
+
+    global.logger = logger; // Make logger accessible in sessionHandler
 
 
     const bot       = new SteamUser();
@@ -92,9 +94,9 @@ module.exports.run = () => {
 
         var loadDestinations = require("./helpers/loadDestinations.js");
 
-        loadDestinations.loadProfiles(logger, (profiles) => { // Sorry for the slight callback hell that is now coming
-            loadDestinations.loadGroups(logger, (groups) => {
-                require("./helpers/getQuote.js").getQuote(logger, (quotes) => {
+        loadDestinations.loadProfiles((profiles) => { // Sorry for the slight callback hell that is now coming
+            loadDestinations.loadGroups((groups) => {
+                require("./helpers/getQuote.js").getQuote((quotes) => {
 
                     // Check if nothing was found to comment on
                     if (profiles.length == 0 && groups.length == 0) {
@@ -124,11 +126,11 @@ module.exports.run = () => {
 
                         const commentFile = require("./helpers/comment.js");
 
-                        commentFile.commentProfile(profiles, quotes, logger, community, (failedProfiles) => {
+                        commentFile.commentProfile(profiles, quotes, community, (failedProfiles) => {
                             if (groups.length > 0) logger("info", "Starting to comment on groups...");
 
                             setTimeout(() => {
-                                commentFile.commentGroup(groups, quotes, logger, community, (failedGroups) => {
+                                commentFile.commentGroup(groups, quotes, community, (failedGroups) => {
                                     logger("info", "Finished commenting!\n");
 
                                     if (failedProfiles.length > 0) {
