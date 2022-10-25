@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 25.10.2022 14:56:43
+ * Last Modified: 25.10.2022 14:59:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -20,7 +20,8 @@ const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
 const SteamID        = require("steamid");
 
-const data = require("./data.json");
+const sessionHandler = require("./sessions/sessionHandler.js");
+const data           = require("./data.json");
 
 var config;
 var logininfo;
@@ -29,7 +30,7 @@ var logininfo;
 /**
  * Starts the bot, logs in and starts commenting
  */
-module.exports.run = () => {
+module.exports.run = async () => {
 
     // Configure my logging library (https://github.com/HerrEurobeat/output-logger#options-1)
     logger.options({
@@ -77,11 +78,13 @@ module.exports.run = () => {
     // Start logging in
     logger("info", "Logging in...", false, false);
 
-    bot.logOn({
-        accountName: logininfo.accountName,
-        password: logininfo.password
-    });
+    let session = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
+    let token = await session.getToken();
+    if (!token) process.exit(1); // Exit if no token could be retrieved
 
+    bot.logOn({ refreshToken: token });
+
+    // Attach steam-user loggedOn event
     bot.on("loggedOn", () => {
         logger("", "", true);
         logger("info", "Account logged in!");
