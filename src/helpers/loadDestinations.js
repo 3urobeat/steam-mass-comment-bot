@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 24.01.2022 16:45:14
+ * Last Modified: 25.10.2022 14:55:50
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/HerrEurobeat>
@@ -22,7 +22,7 @@ const fs              = require("fs");
 /**
  * Loads profiles from config and converts them, if necessary, to steamid64
  */
-module.exports.loadProfiles = (logger, callback) => {
+module.exports.loadProfiles = (callback) => {
 
     var profiles = [];
     var resolverCalls = 0;
