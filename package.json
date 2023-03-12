@@ -4,11 +4,11 @@
     "description": "Comment with a few clicks under a ton of steam profiles & groups!",
     "main": "index.js",
     "dependencies": {
-        "@seald-io/nedb": "^3.1.0",
-        "output-logger": "^2.2.3",
-        "steam-session": "^0.0.3-alpha",
-        "steam-user": "^4.25.0",
-        "steamcommunity": "^3.44.2",
+        "@seald-io/nedb": "^4.0.1",
+        "output-logger": "^2.2.4",
+        "steam-session": "^0.0.5-alpha",
+        "steam-user": "^4.27.1",
+        "steamcommunity": "^3.44.3",
         "steamid": "^2.0.0",
         "steamid-resolver": "^1.2.2"
     },
