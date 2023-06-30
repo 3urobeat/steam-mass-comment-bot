@@ -5,12 +5,15 @@
 	<p></p>
 </div>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<div align="center">
+
 [![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
-[![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/HerrEurobeat/steam-mass-comment-bot)
+[![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-mass-comment-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)
 <p align="center">Click on a badge to learn more.</p>
+
+</div>
 
 &nbsp;
 
@@ -21,7 +24,7 @@
 &nbsp;
 
 ## **Download:**
-Click here: [Download](https://github.com/HerrEurobeat/steam-mass-comment-bot/archive/master.zip)  
+Click here: [Download](https://github.com/3urobeat/steam-mass-comment-bot/archive/master.zip)  
 Extract the zip and open the `steam-mass-comment-bot` folder.  
   
 You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
@@ -88,6 +91,6 @@ If you are getting a syntax mistake error then check for these common mistakes:
 - forgot brackets `"` when writing something?  
 
 &nbsp;  
-If you get another error or have questions, please [open an issue here](https://github.com/HerrEurobeat/steam-mass-comment-bot/issues/new).  
+If you get another error or have questions, please [open an issue here](https://github.com/3urobeat/steam-mass-comment-bot/issues/new).  
 Everything that appears in your console/terminal window will also be saved to the `output.txt` file. Please attach the content of your last run to your issue to make it easier for me to troubleshoot.  
 
