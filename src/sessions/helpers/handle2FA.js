@@ -22,7 +22,7 @@ const sessionHandler = require("../sessionHandler.js");
 
 /**
  * Internal - Handles submitting 2FA code
- * @param {Object} res Response object from startWithCredentials() promise
+ * @param {object} res Response object from startWithCredentials() promise
  */
 sessionHandler.prototype._handle2FA = function(res) {
 

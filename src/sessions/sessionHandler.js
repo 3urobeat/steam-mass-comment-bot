@@ -25,9 +25,9 @@ const nedb         = require("@seald-io/nedb");
 /**
  * Constructor - Object oriented approach for handling session for one account
  * @param {SteamUser} bot The bot instance of the calling account
- * @param {String} thisbot The thisbot string of the calling account
- * @param {Number} loginindex The loginindex of the calling account
- * @param {Object} logOnOptions Object containing username, password and optionally steamGuardCode
+ * @param {string} thisbot The thisbot string of the calling account
+ * @param {number} loginindex The loginindex of the calling account
+ * @param {object} logOnOptions Object containing username, password and optionally steamGuardCode
  */
 const sessionHandler = function(bot, thisbot, loginindex, logOnOptions) {
 
@@ -82,7 +82,7 @@ sessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
 
 /**
  * Internal - Handles resolving the getToken() promise
- * @param {String} token The token to resolve with or null on failure
+ * @param {string} token The token to resolve with or null on failure
  */
 sessionHandler.prototype._resolvePromise = function(token) {
 
