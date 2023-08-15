@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 15.08.2023 17:03:04
+ * Last Modified: 15.08.2023 17:32:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -39,9 +39,11 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
 
     profiles.forEach((e, i) => {
         setTimeout(() => {
-            logger("info", `Commenting on profile ${e}...`, false, false, logger.animation("loading"));
+            let quote = randomstring(quotes);
 
-            community.postUserComment(e, randomstring(quotes), (err) => {
+            logger("info", `Commenting on profile ${e}: ${String(quote).split("\n")[0]}`, false, false, logger.animation("loading")); // Splitting \n to only get first line of multi line comments
+
+            community.postUserComment(e, quote, (err) => {
                 if (err) {
                     logger("warn", `Comment on profile ${e} failed! Error: ${err}`);
                     failedProfiles.push(e);
@@ -81,9 +83,11 @@ module.exports.commentGroup = (groups, quotes, community, callback) => {
 
     groups.forEach((e, i) => {
         setTimeout(() => {
-            logger("info", `Commenting in group ${e}...`, false, false, logger.animation("loading"));
+            let quote = randomstring(quotes);
 
-            community.postGroupComment(e, randomstring(quotes), (err) => {
+            logger("info", `Commenting in group ${e}: ${String(quote).split("\n")[0]}`, false, false, logger.animation("loading"));
+
+            community.postGroupComment(e, quote, (err) => {
                 if (err) {
                     logger("warn", `Comment in group ${e} failed! Error: ${err}`);
                     failedGroups.push(e);
