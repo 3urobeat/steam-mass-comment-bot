@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 15.08.2023 17:04:18
+ * Last Modified: 15.08.2023 17:13:02
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -84,6 +84,7 @@ module.exports.run = async () => {
 
     bot.logOn({ refreshToken: token });
 
+
     // Attach steam-user loggedOn event
     bot.on("loggedOn", async () => {
         logger("", "", true);
@@ -119,7 +120,8 @@ module.exports.run = async () => {
             // Show ready message
             logger("", "", true);
             logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-            logger("", `> Logged in as ${logininfo.accountName} and loaded ${profiles.length + groups.length} IDs!`, true);
+            logger("", `> Logged in as ${logininfo.accountName}!`, true);
+            logger("", `> Loaded ${profiles.length} profile IDs and ${groups.length} group IDs!`, true)
             logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
             logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
             logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
@@ -155,6 +157,7 @@ module.exports.run = async () => {
                 });
             }, 5000);
         });
+
     });
 
 
