@@ -10,7 +10,7 @@
 [![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-mass-comment-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
-[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://paypal.me/3urobeat)
+[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://github.com/sponsors/3urobeat)
 <p align="center">Click on a badge to learn more.</p>
 
 </div>
@@ -70,7 +70,7 @@ Should you recieve cooldown errors with the default values, increase the value a
 ## **Starting the bot:**
 
 Please open a console window or terminal in the current folder.  
-Run the command `npm install` and wait for it to complete. This will install al necessary packages for the bot.  
+Run the command `npm install --production` and wait for it to complete. This will install al necessary packages for the bot.  
 
 When done, type `node index.js` to start the bot.  
 It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each profile and group you set in `config.json` after eachother.  

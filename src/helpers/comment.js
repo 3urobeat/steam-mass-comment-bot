@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 30.06.2023 09:40:17
+ * Last Modified: 15.08.2023 17:03:04
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -27,10 +27,10 @@ const randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
  * @param {Array} profiles Array of profiles to comment on
  * @param {Array} quotes Array of quotes
  * @param {SteamCommunity} community The SteamCommunity instance
- * @param {function} [callback] Called with `failedGroups` (Array) on completion
+ * @param {Function} [callback] Called with `failedGroups` (Array) on completion
  */
 module.exports.commentProfile = (profiles, quotes, community, callback) => {
-    var failedProfiles = [];
+    let failedProfiles = [];
 
     if (profiles.length == 0) return callback(failedProfiles);
 
@@ -69,10 +69,10 @@ module.exports.commentProfile = (profiles, quotes, community, callback) => {
  * @param {Array} groups Array of groups to comment in
  * @param {Array} quotes Array of quotes
  * @param {SteamCommunity} community The SteamCommunity instance
- * @param {function} [callback] Called with `failedGroups` (Array) on completion
+ * @param {Function} [callback] Called with `failedGroups` (Array) on completion
  */
- module.exports.commentGroup = (groups, quotes, community, callback) => {
-    var failedGroups = [];
+module.exports.commentGroup = (groups, quotes, community, callback) => {
+    let failedGroups = [];
 
     if (groups.length == 0) return callback(failedGroups);
 

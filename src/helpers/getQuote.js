@@ -4,7 +4,7 @@
  * Created Date: 25.01.2022 11:39:11
  * Author: 3urobeat
  *
- * Last Modified: 30.06.2023 09:40:17
+ * Last Modified: 15.08.2023 17:02:41
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -17,16 +17,18 @@
 
 const fs = require("fs");
 
+
 /**
  * Gets a random quote from comments.txt
- * @param {function} [callback] Called with `quotes` (Array) on completion.
+ * @param {Function} [callback] Called with `quotes` (Array) on completion.
  */
 module.exports.getQuote = (callback) => {
     logger("info", "Loading quotes from comments.txt...", false, true);
 
-    var quotes = [];
-    var quotes = fs.readFileSync("./comments.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array
-    var quotes = quotes.filter(str => str != ""); // Remove empty quotes as empty comments will not work/make no sense
+    let quotes = [];
+
+    quotes = fs.readFileSync("./comments.txt", "utf8").split("\n"); // Get all quotes from the quotes.txt file into an array
+    quotes = quotes.filter(str => str != ""); // Remove empty quotes as empty comments will not work/make no sense
 
     quotes.forEach((e, i) => { // Multi line strings that contain \n will get splitted to \\n -> remove second \ so that node-steamcommunity understands the quote when commenting
         if (e.length > 999) {

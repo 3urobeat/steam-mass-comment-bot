@@ -4,7 +4,7 @@
  * Created Date: 23.01.2022 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 30.06.2023 09:40:17
+ * Last Modified: 15.08.2023 17:04:18
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -23,8 +23,8 @@ const SteamID        = require("steamid");
 const sessionHandler = require("./sessions/sessionHandler.js");
 const data           = require("./data.json");
 
-var config;
-var logininfo;
+let config;
+let logininfo;
 
 
 /**
@@ -85,74 +85,75 @@ module.exports.run = async () => {
     bot.logOn({ refreshToken: token });
 
     // Attach steam-user loggedOn event
-    bot.on("loggedOn", () => {
+    bot.on("loggedOn", async () => {
         logger("", "", true);
         logger("info", "Account logged in!");
 
         // Start playing games if enabled
         if (config.playingGames.length > 0) bot.gamesPlayed(config.playingGames);
 
-        // Get ids
+
+        // Get IDs
         logger("info", "Getting profile & group ids from URLs in config...", false, true, logger.animation("loading"));
 
-        var loadDestinations = require("./helpers/loadDestinations.js");
+        const { loadProfiles, loadGroups } = require("./helpers/loadDestinations.js");
 
-        loadDestinations.loadProfiles((profiles) => { // Sorry for the slight callback hell that is now coming
-            loadDestinations.loadGroups((groups) => {
-                require("./helpers/getQuote.js").getQuote((quotes) => {
-
-                    // Check if nothing was found to comment on
-                    if (profiles.length == 0 && groups.length == 0) {
-                        logger("error", "No profiles and groups found to comment on/in! Exiting...");
-                        process.exit(1);
-                    }
-
-                    // Check if no quotes were provided
-                    if (quotes.length == 0) {
-                        logger("error", "No comments found in comments.txt! Please provide messages I can choose from in comments.txt! Exiting...");
-                        process.exit(1);
-                    }
-
-                    // Show ready message
-                    logger("", "", true);
-                    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                    logger("", `> Logged in as ${logininfo.accountName} and loaded ${profiles.length + groups.length} IDs!`, true);
-                    logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
-                    logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
-                    logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
-                    logger("", "", true);
+        const profiles = await loadProfiles();
+        const groups   = await loadGroups();
 
 
-                    // Start commenting on profiles
+        require("./helpers/getQuote.js").getQuote((quotes) => {
+
+            // Check if nothing was found to comment on
+            if (profiles.length == 0 && groups.length == 0) {
+                logger("error", "No profiles and groups found to comment on/in! Exiting...");
+                process.exit(1);
+            }
+
+            // Check if no quotes were provided
+            if (quotes.length == 0) {
+                logger("error", "No comments found in comments.txt! Please provide messages I can choose from in comments.txt! Exiting...");
+                process.exit(1);
+            }
+
+            // Show ready message
+            logger("", "", true);
+            logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+            logger("", `> Logged in as ${logininfo.accountName} and loaded ${profiles.length + groups.length} IDs!`, true);
+            logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
+            logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
+            logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
+            logger("", "", true);
+
+
+            // Start commenting on profiles
+            setTimeout(() => {
+                if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
+
+                const commentFile = require("./helpers/comment.js");
+
+                commentFile.commentProfile(profiles, quotes, community, (failedProfiles) => {
+                    if (groups.length > 0) logger("info", "Starting to comment on groups...");
+
                     setTimeout(() => {
-                        if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
+                        commentFile.commentGroup(groups, quotes, community, (failedGroups) => {
+                            logger("info", "Finished commenting!\n");
 
-                        const commentFile = require("./helpers/comment.js");
+                            if (failedProfiles.length > 0) {
+                                logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
+                                logger("", "", true);
+                            }
+                            if (failedGroups.length > 0) {
+                                logger("info", "Failed groups: \n" + failedGroups.join("\n"));
+                                logger("", "", true);
+                            }
 
-                        commentFile.commentProfile(profiles, quotes, community, (failedProfiles) => {
-                            if (groups.length > 0) logger("info", "Starting to comment on groups...");
-
-                            setTimeout(() => {
-                                commentFile.commentGroup(groups, quotes, community, (failedGroups) => {
-                                    logger("info", "Finished commenting!\n");
-
-                                    if (failedProfiles.length > 0) {
-                                        logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
-                                        logger("", "", true);
-                                    }
-                                    if (failedGroups.length   > 0) {
-                                        logger("info", "Failed groups: \n" + failedGroups.join("\n"));
-                                        logger("", "", true);
-                                    }
-
-                                    logger("info", "Exiting...");
-                                    process.exit(0);
-                                });
-                            }, config.commentdelay);
+                            logger("info", "Exiting...");
+                            process.exit(0);
                         });
-                    }, 5000);
+                    }, config.commentdelay);
                 });
-            });
+            }, 5000);
         });
     });
 
@@ -164,8 +165,10 @@ module.exports.run = async () => {
 
 
     // Respond with afkMessage if enabled in config
-    bot.on("friendMessage", (steamID, message) => {
-        var steamID64 = new SteamID(String(steamID)).getSteamID64();
+    bot.chat.on("friendMessage", (msg) => {
+        let message = msg.message_no_bbcode;
+        let steamID = msg.steamid_friend;
+        let steamID64 = new SteamID(String(steamID)).getSteamID64();
 
         logger("info", `Friend message from ${steamID64}: ${message}`);
 

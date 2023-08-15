@@ -22,5 +22,10 @@
         "url": "https://github.com/3urobeat/steam-mass-comment-bot/issues"
     },
     "homepage": "https://github.com/3urobeat",
-    "repository": "https://github.com/3urobeat/steam-mass-comment-bot"
+    "repository": "https://github.com/3urobeat/steam-mass-comment-bot",
+    "devDependencies": {
+        "eslint": "^8.47.0",
+        "eslint-plugin-jsdoc": "^46.4.6",
+        "tsd-jsdoc": "^2.5.0"
+    }
 }

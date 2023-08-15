@@ -4,7 +4,7 @@
  * Created Date: 10.10.2022 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 30.06.2023 09:40:17
+ * Last Modified: 15.08.2023 17:03:40
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 3urobeat <https://github.com/3urobeat>
@@ -36,7 +36,7 @@ sessionHandler.prototype._decodeJWT = function(token) {
 
 /**
  * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
- * @param {function} [callback] Called with `refreshToken` (String) on success or `null` on failure
+ * @param {Function} [callback] Called with `refreshToken` (String) on success or `null` on failure
  */
 sessionHandler.prototype._getTokenFromStorage = function(callback) {
 
@@ -74,7 +74,7 @@ sessionHandler.prototype._getTokenFromStorage = function(callback) {
 
 /**
  * Internal - Saves a new token for this account to tokens.db
- * @param {String} token The refreshToken to store
+ * @param {string} token The refreshToken to store
  */
 sessionHandler.prototype._saveTokenToStorage = function(token) {
     logger("debug", `_saveTokenToStorage(): Updating tokens.db entry for accountName '${this.logOnOptions.accountName}'...`);
@@ -86,11 +86,10 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
 
 /**
  * External - Removes a token from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
- * @param tokensdb tokensdb
- * @param thisbot thisbot
- * @param {String} accountName Name of the account to invalidate the token of
+ * @param tokensdb Tokens database instance
+ * @param {string} accountName Name of the account to invalidate the token of
  */
-module.exports.invalidateTokenInStorage = function(tokensdb, thisbot, accountName) { // Tokensdb needs to be passed manually atm as calling the function too fast otherwise fails
+module.exports.invalidateTokenInStorage = function(tokensdb, accountName) { // Tokensdb needs to be passed manually atm as calling the function too fast otherwise fails
     logger("debug", `invalidateTokenInStorage(): Removing refreshToken for accountName '${accountName}' from tokens.db...`);
 
     tokensdb.removeAsync({ accountName: accountName }, { multi: true });
