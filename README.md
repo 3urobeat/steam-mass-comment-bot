@@ -10,8 +10,10 @@
 [![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-mass-comment-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
-[![Donate](https://img.shields.io/badge/donate-%241-orange)](https://github.com/sponsors/3urobeat)
+[![Donate](https://img.shields.io/badge/Donate-%241-orange)](https://github.com/sponsors/3urobeat)
 <p align="center">Click on a badge to learn more.</p>
+
+<img src="./.github/img/demo.gif">
 
 </div>
 
@@ -23,7 +25,7 @@
   
 &nbsp;
 
-## **Download:**
+## Download:
 Click here: [Download](https://github.com/3urobeat/steam-mass-comment-bot/archive/master.zip)  
 Extract the zip and open the `steam-mass-comment-bot` folder.  
   
@@ -32,7 +34,7 @@ To check your version number if you already have node installed, type `node --ve
 
 &nbsp;
 
-## **Setup:**
+## Setup:
 
 Open `logininfo.json` with a text editor and fill in the username and password of your account into the provided brackets.  
 Save and exit.
@@ -44,7 +46,7 @@ Put in the profile links or steamID64s you want to comment on into the `profiles
 Put in the group links or steamID64s you want to comment in into the `groups` array.  
   
 Make sure you are following this syntax when filling the arrays:  
-```
+```json
 "profiles": [
 	"ID1",
 	"steamcommunity.com/id/name2",
@@ -67,7 +69,7 @@ Should you recieve cooldown errors with the default values, increase the value a
 
 &nbsp;  
 
-## **Starting the bot:**
+## Starting the bot:
 
 Please open a console window or terminal in the current folder.  
 Run the command `npm install --production` and wait for it to complete. This will install al necessary packages for the bot.  
@@ -82,7 +84,7 @@ If you are on Windows and don't know how to open a console window in the current
 
 &nbsp;
 
-## **Troubleshooting:**
+## Troubleshooting:
 
 If you don't follow the syntax from above you will get an error because the bot is unable to read the file.  
 If you are getting a syntax mistake error then check for these common mistakes:  
