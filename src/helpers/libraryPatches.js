@@ -8,8 +8,17 @@ const SteamID = require("steamid");
 const SteamCommunity = require("steamcommunity");
 const Helpers = require("../../node_modules/steamcommunity/components/helpers.js");
 
-const EDiscussionType = require("./EDiscussionType.js");
 
+const EDiscussionType = {
+    "Forum": 0,
+    "App": 1,
+    "Group": 2,
+
+    // Value-to-name mapping for convenience
+    "0": "Forum",
+    "1": "App",
+    "2": "Group"
+};
 
 /**
  * Scrape a discussion's DOM to get all available information
