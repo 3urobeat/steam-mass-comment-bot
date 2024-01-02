@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-01 18:07:41
+ * Last Modified: 2024-01-02 18:55:31
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -17,94 +17,90 @@
 
 const SteamCommunity = require("steamcommunity"); //eslint-disable-line
 
-const config = require("../../config.json");
-
-const randomstring = arr => arr[Math.floor(Math.random() * arr.length)];
+const randomstring = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 
 /**
- * Comments on all profiles
- * @param {Array} profiles Array of profiles to comment on
+ * Comments on a destination
+ * @param {{ raw: string, processed: string, type: "profile" | "group" | "sharedfile" | "discussion" }} dest The destination to comment on
  * @param {Array} quotes Array of quotes
  * @param {SteamCommunity} community The SteamCommunity instance
- * @param {Function} [callback] Called with `failedGroups` (Array) on completion
+ * @param {function(any | null): void} callback Called on completion with `null` on success or the error returned by SteamCommunity
  */
-module.exports.commentProfile = (profiles, quotes, community, callback) => {
-    let failedProfiles = [];
+module.exports.comment = async function(dest, quotes, community, callback) {
 
-    if (profiles.length == 0) return callback(failedProfiles);
+    // Determine the function to use for this type
+    /**
+     * @type {Function}
+     */
+    let postComment;
+    let commentArgs = {};
 
-    // Create a new 0% progress bar
-    logger.createProgressBar();
+    switch (dest.type) {
+        case "profile":
+            postComment = community.postUserComment; // Context of the correct bot account is applied later
+            commentArgs = { receiverSteamID64: dest.processed, quote: null };
+            break;
+        case "group":
+            postComment = community.postGroupComment; // Context of the correct bot account is applied later
+            commentArgs = { receiverSteamID64: dest.processed, quote: null };
+            break;
+        case "sharedfile":
+            postComment = community.postSharedFileComment; // Context of the correct bot account is applied later
+            commentArgs = { sharedfileOwnerId: null, sharedfileId: dest.processed, quote: null };
 
-    profiles.forEach((e, i) => {
-        setTimeout(() => {
-            let quote = randomstring(quotes);
+            // Get sharedfileOwnerId by scraping sharedfile DOM - Quick hack to await function that only supports callbacks
+            await (() => {
+                return new Promise((resolve) => {
+                    community.getSteamSharedFile(dest.processed, (err, obj) => {
+                        if (err) {
+                            logger("error", "Couldn't get sharedfile even though it exists?! Aborting!\n" + err);
+                            return;
+                        }
 
-            logger("info", `Commenting on profile ${e}: ${String(quote).split("\n")[0]}`, false, false, logger.animation("loading")); // Splitting \n to only get first line of multi line comments
+                        commentArgs.sharedfileOwnerId = obj.owner.getSteamID64();
+                        resolve();
+                    });
+                });
+            })();
+            break;
+        case "discussion":
+            postComment = community.postDiscussionComment;
+            commentArgs = { topicOwner: null, gidforum: null, discussionId: null, quote: null };
 
-            community.postUserComment(e, quote, (err) => {
-                if (err) {
-                    logger("warn", `Comment on profile ${e} failed! Error: ${err}`);
-                    failedProfiles.push(e);
+            // Get topicOwner & gidforum by scraping discussion DOM - Quick hack to await function that only supports callbacks
+            await (() => {
+                return new Promise((resolve) => {
+                    community.getSteamDiscussion(dest.processed, (err, obj) => { // ReceiverSteamID64 is a URL in this case
+                        if (err) {
+                            logger("error", "Couldn't get discussion even though it exists?! Aborting!\n" + err);
+                            return;
+                        }
 
-                    if (err.includes("HTTP error 429") || err.includes("You've been posting too frequently, and can't make another post right now")) {
-                        logger("", "", true);
-                        logger("error", `Cooldown error detected! Aborting as all other comments from this IP will fail too! Please wait before trying again.\n        All profiles below ${e} have not been processed.`, true);
-                        process.exit(1);
-                    }
-                }
+                        commentArgs.topicOwner = obj.topicOwner;
+                        commentArgs.gidforum = obj.gidforum;
+                        commentArgs.discussionId = obj.id;
+                        resolve();
+                    });
+                });
+            })();
+            break;
+        default:
+            logger("error", `Unsupported destination type '${dest.type}' for entry '${dest.raw}'! Skipping...`);
+            return;
+    }
 
-                // Calculate progress and update progress bar
-                logger.setProgressBar((i + 1) / profiles.length * 100);
+    // Get random quote
+    commentArgs.quote = randomstring(quotes);
 
-                // Check if we processed all profiles and make a callback
-                if (profiles.length == i + 1) callback(failedProfiles);
-            });
-        }, config.commentdelay * i);
-    });
-};
+    logger("info", `Commenting on '${dest.type}' '${dest.processed}': ${commentArgs.quote.split("\n")[0]}`, false, false, logger.animation("loading")); // Splitting \n to only get first line of multi line comments
 
+    // Call the function. Use call() and pass community to keep context (this.) which is lost during our postComment variable assignment
+    postComment.call(community, ...Object.values(commentArgs), (err) => {
+        if (err) {
+            logger("warn", `Failed to comment on '${dest.type}' '${dest.processed}'! ${err}`);
+        }
 
-/**
- * Comments in all groups
- * @param {Array} groups Array of groups to comment in
- * @param {Array} quotes Array of quotes
- * @param {SteamCommunity} community The SteamCommunity instance
- * @param {Function} [callback] Called with `failedGroups` (Array) on completion
- */
-module.exports.commentGroup = (groups, quotes, community, callback) => {
-    let failedGroups = [];
-
-    if (groups.length == 0) return callback(failedGroups);
-
-    // Create a new 0% progress bar
-    logger.createProgressBar();
-
-    groups.forEach((e, i) => {
-        setTimeout(() => {
-            let quote = randomstring(quotes);
-
-            logger("info", `Commenting in group ${e}: ${String(quote).split("\n")[0]}`, false, false, logger.animation("loading"));
-
-            community.postGroupComment(e, quote, (err) => {
-                if (err) {
-                    logger("warn", `Comment in group ${e} failed! Error: ${err}`);
-                    failedGroups.push(e);
-
-                    if (err.includes("HTTP error 429") || err.includes("You've been posting too frequently, and can't make another post right now")) {
-                        logger("", "", true);
-                        logger("error", `Cooldown error detected! Aborting as all other comments from this IP will fail too! Please wait before trying again.\n        All groups below ${e} have not been processed.`, true);
-                        process.exit(1);
-                    }
-                }
-
-                // Calculate progress and update progress bar
-                logger.setProgressBar((i + 1) / groups.length * 100);
-
-                // Check if we processed all profiles and make a callback
-                if (groups.length == i + 1) callback(failedGroups);
-            });
-        }, config.commentdelay * i);
+        callback(err);
     });
 };

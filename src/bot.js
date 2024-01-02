@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-02 13:15:43
+ * Last Modified: 2024-01-02 19:13:25
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+// Don't judge this code too hard, it is slapped together quite loosely.
+// Check out my main project instead: https://github.com/3urobeat/steam-comment-service-bot
 
 const logger         = require("output-logger");
 const SteamUser      = require("steam-user");
@@ -37,7 +40,8 @@ module.exports.run = async () => {
         msgstructure: `[${logger.Const.ANIMATION}] [${logger.Const.DATE} | ${logger.Const.TYPE}] ${logger.Const.MESSAGE}`,
         paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION],
         outputfile: "./output.txt",
-        animationdelay: 250
+        animationdelay: 250,
+        printdebug: true
     });
 
     global.logger = logger; // Make logger accessible in sessionHandler
@@ -73,9 +77,9 @@ module.exports.run = async () => {
 
 
     // Display commentdelay warning message if too low
-    if (config.commentdelay < 5000) logger("warn", "I strongly advise not setting the commentdelay below 5000ms!\n       You might be running in danger of getting banned for spamming or will at least get a cooldown rather quickly.");
+    if (config.commentdelay < 5000) logger("warn", "I strongly advise not setting the commentdelay below 5000ms!\n       You might be running in danger of getting banned for spamming or will at least get a cooldown rather quickly.", true);
     if (config.commentdelay <= 500) {
-        logger("error", "Your commentdelay is way to low! This will either give you a cooldown instantly or outright ban you for spamming! Aborting...");
+        logger("error", "Your commentdelay is way too low! This will either give you a cooldown instantly or outright ban you for spamming! Aborting...");
         process.exit(1);
     }
 
@@ -102,19 +106,18 @@ module.exports.run = async () => {
         // Get IDs
         logger("info", "Getting profile & group ids from URLs in config...", false, true, logger.animation("loading"));
 
-        const { loadProfiles, loadGroups } = require("./helpers/loadDestinations.js");
+        const { loadDestinations } = require("./helpers/loadDestinations.js");
+        const destinations = await loadDestinations();
 
-        const profiles = await loadProfiles();
-        const groups   = await loadGroups();
+        if (destinations.length == 0) {
+            logger("error", "No destinations found in config to comment on! Exiting...");
+            process.exit(1);
+        }
 
 
-        require("./helpers/getQuote.js").getQuote((quotes) => {
+        const { getQuote } = require("./helpers/getQuote.js");
 
-            // Check if nothing was found to comment on
-            if (profiles.length == 0 && groups.length == 0) {
-                logger("error", "No profiles and groups found to comment on/in! Exiting...");
-                process.exit(1);
-            }
+        getQuote((quotes) => {
 
             // Check if no quotes were provided
             if (quotes.length == 0) {
@@ -126,41 +129,59 @@ module.exports.run = async () => {
             logger("", "", true);
             logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
             logger("", `> Logged in as ${logininfo.accountName}!`, true);
-            logger("", `> Loaded ${profiles.length} profile IDs and ${groups.length} group IDs!`, true)
+            logger("", `> Found ${destinations.length} destinations in config!`, true);
             logger("", `> Loaded ${quotes.length} quotes from comments.txt!`, true);
             logger("", `> Starting to comment in 5 seconds with ${config.commentdelay}ms delay!`, true);
             logger("", "*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*", true);
             logger("", "", true);
 
 
-            // Start commenting on profiles
-            setTimeout(() => {
-                if (profiles.length > 0) logger("info", `Starting to comment on ${profiles.length} profiles...`);
+            // Create a new 0% progress bar when the loop below starts
+            setTimeout(() => logger.createProgressBar(), config.commentdelay);
 
-                const commentFile = require("./helpers/comment.js");
 
-                commentFile.commentProfile(profiles, quotes, community, (failedProfiles) => {
-                    if (groups.length > 0) logger("info", "Starting to comment on groups...");
+            // Start commenting
+            const { comment } = require("./helpers/comment.js");
 
-                    setTimeout(() => {
-                        commentFile.commentGroup(groups, quotes, community, (failedGroups) => {
+            let failed = [];
+            let http429err = false;
+
+            destinations.forEach((e, i) => {
+                setTimeout(() => {
+                    if (http429err) return; // Block further executions if true
+
+                    comment(e, quotes, community, (err) => {
+                        if (err) {
+                            failed.push(e.raw);
+
+                            if (String(err).includes("HTTP error 429") || String(err).includes("You've been posting too frequently, and can't make another post right now")) {
+                                logger("", "", true);
+                                logger("error", "Cooldown error detected! Aborting as all other comments from this IP will fail too! Please wait before trying again.\n        Exiting in 5 seconds...", true);
+
+                                http429err = true;
+                                setTimeout(() => process.exit(1), 5000);
+                            }
+                        }
+
+                        // Calculate progress and update progress bar
+                        logger.setProgressBar((i + 1) / destinations.length * 100);
+
+                        // Print result on the last iteration
+                        if (i + 1 == destinations.length) {
                             logger("info", "Finished commenting!\n");
 
-                            if (failedProfiles.length > 0) {
-                                logger("info", "Failed profiles: \n" + failedProfiles.join("\n"));
-                                logger("", "", true);
-                            }
-                            if (failedGroups.length > 0) {
-                                logger("info", "Failed groups: \n" + failedGroups.join("\n"));
+                            if (failed.length > 0) {
+                                logger("info", "Failed: \n" + failed.join("\n"));
                                 logger("", "", true);
                             }
 
-                            logger("info", "Exiting...");
-                            process.exit(0);
-                        });
-                    }, config.commentdelay);
-                });
-            }, 5000);
+                            logger("info", "Exiting in 5 seconds...");
+                            setTimeout(() => process.exit(0), 5000);
+                        }
+                    });
+                }, config.commentdelay * (i + 1)); // + 1 to delay the first iteration as well
+            });
+
         });
 
     });
