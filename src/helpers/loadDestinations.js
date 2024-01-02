@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-01 20:42:59
+ * Last Modified: 2024-01-02 18:52:05
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -157,10 +157,12 @@ function handleSteamIdResolving(str, callback) {
 
 /**
  * Loads all destinations from the config, determines type and converts them to steamID64
+ * @returns {Promise.<Array.<{ raw: string, processed: string, type: "profile" | "group" | "sharedfile" | "discussion" }>>} Resolves with an array of objects for every destination
  */
 module.exports.loadDestinations = function() {
     return new Promise((resolve) => {
 
+        let failed  = 0;
         let results = [];
 
         config.destinations.forEach((e, i) => {
@@ -169,6 +171,7 @@ module.exports.loadDestinations = function() {
                 handleSteamIdResolving(e, (err, id, type) => {
                     if (err) {
                         logger("error", `Failed to resolve destination '${e}', ignoring it. ${err}`);
+                        failed++;
                     } else {
                         results.push({
                             raw: e,
@@ -177,7 +180,7 @@ module.exports.loadDestinations = function() {
                         });
                     }
 
-                    if (i == config.destinations.length - 1) resolve(results);
+                    if (results.length + failed == config.destinations.length) resolve(results);
                 });
 
             }, 500 * i);
