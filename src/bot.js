@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 15:16:00
+ * Last Modified: 2024-01-03 16:15:08
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -22,6 +22,7 @@ const logger         = require("output-logger");
 const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
 const SteamID        = require("steamid");
+const EResult        = SteamUser.EResult;
 
 const sessionHandler = require("./sessions/sessionHandler.js");
 const data           = require("./data.json");
@@ -92,13 +93,20 @@ module.exports.run = async () => {
 
 
     // Start logging in
-    logger("info", "Logging in...", false, false);
+    let session;
 
-    let session = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
-    let token = await session.getToken();
-    if (!token) process.exit(1); // Exit if no token could be retrieved
+    async function login() {
+        logger("info", "Logging in...", false, false);
 
-    bot.logOn({ refreshToken: token });
+        session   = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
+        let token = await session.getToken();
+
+        if (!token) process.exit(1); // Exit if no token could be retrieved
+
+        bot.logOn({ refreshToken: token });
+    }
+
+    login();
 
 
     // Attach steam-user loggedOn event
@@ -223,5 +231,23 @@ module.exports.run = async () => {
         logger("info", "SteamUser auto renewed this refresh token, updating database entry...");
 
         session._saveTokenToStorage(newToken);
+    });
+
+
+    // Handles a login error
+    bot.on("error", (err) => {
+        // Invalidate token to get a new session if this error was caused by an invalid refreshToken
+        if (err.eresult == EResult.InvalidPassword || err.eresult == EResult.AccessDenied || err == "Error: InvalidSignature") { // These are the most likely enums that will occur when an invalid token was used I guess (Checking via String here as it seems like there are EResults missing)
+            logger("debug", "Token login error: Calling SessionHandler's _invalidateTokenInStorage() function to get a new session when retrying this login attempt");
+
+            if (err.eresult == EResult.AccessDenied) logger("warn", "Detected an AccessDenied login error! This is usually caused by an invalid login token. Deleting login token, please re-submit your Steam Guard code.");
+
+            session.invalidateTokenInStorage();
+
+            setTimeout(() => login(), 5000);
+            return;
+        }
+
+        logger("error", `[${this.logOnOptions.accountName}] Error logging in! ${err}`);
     });
 };
