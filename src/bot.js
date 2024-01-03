@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:26:52
+ * Last Modified: 2024-01-03 14:34:13
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -84,6 +84,13 @@ module.exports.run = async () => {
     }
 
 
+    // Exit if no destinations are set
+    if (config.destinations.length == 0) {
+        logger("error", "No destinations set in config to comment on! Exiting...");
+        process.exit(1);
+    }
+
+
     // Start logging in
     logger("info", "Logging in...", false, false);
 
@@ -110,7 +117,7 @@ module.exports.run = async () => {
         const destinations = await loadDestinations();
 
         if (destinations.length == 0) {
-            logger("error", "No destinations found in config to comment on! Exiting...");
+            logger("error", "No valid destinations found to comment on! Exiting...");
             process.exit(1);
         }
 
