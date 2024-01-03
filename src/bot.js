@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:34:13
+ * Last Modified: 2024-01-03 14:38:10
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -205,14 +205,15 @@ module.exports.run = async () => {
         let message = msg.message_no_bbcode;
         let steamID = msg.steamid_friend;
         let steamID64 = new SteamID(String(steamID)).getSteamID64();
+        let username = bot.users[steamID64].player_name;
 
-        logger("info", `Friend message from ${steamID64}: ${message}`);
+        logger("info", `Friend message from '${username}' (${steamID64}): ${message}`);
 
+        // Respond with afk message if enabled in config
         if (config.afkMessage.length > 0) {
             logger("info", "Responding with: " + config.afkMessage);
 
             bot.chat.sendFriendMessage(steamID, config.afkMessage);
         }
-
     });
 };
