@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-02 19:13:25
+ * Last Modified: 2024-01-03 14:26:52
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -41,7 +41,7 @@ module.exports.run = async () => {
         paramstructure: [logger.Const.TYPE, logger.Const.MESSAGE, "nodate", "remove", logger.Const.ANIMATION],
         outputfile: "./output.txt",
         animationdelay: 250,
-        printdebug: true
+        printdebug: false
     });
 
     global.logger = logger; // Make logger accessible in sessionHandler

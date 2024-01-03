@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-02 18:52:05
+ * Last Modified: 2024-01-03 14:23:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -168,6 +168,22 @@ module.exports.loadDestinations = function() {
         config.destinations.forEach((e, i) => {
             setTimeout(() => {
 
+                // Check for duplicate entry to avoid unneccessary resolving if possible
+                let existingEntry = results.find((f) => f.raw == e);
+
+                if (existingEntry) {
+                    logger("debug", `loadDestination(): Found duplicate entry for '${e}', using it instead of resolving entry again...`);
+
+                    results.push({
+                        raw: e,
+                        processed: existingEntry.processed,
+                        type: existingEntry.type
+                    });
+
+                    return;
+                }
+
+                // Resolve entry
                 handleSteamIdResolving(e, (err, id, type) => {
                     if (err) {
                         logger("error", `Failed to resolve destination '${e}', ignoring it. ${err}`);
@@ -183,7 +199,7 @@ module.exports.loadDestinations = function() {
                     if (results.length + failed == config.destinations.length) resolve(results);
                 });
 
-            }, 500 * i);
+            }, config.destinationResolveDelay * i);
         });
 
     });
