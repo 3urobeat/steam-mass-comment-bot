@@ -19,13 +19,22 @@
 
 &nbsp;
 
+## ✨ **Introduction**  
+This is a simple Steam Comment Bot to send comments with \*one\* account to \*many\* profiles, groups, sharedfiles or discussions.  
+
+This project is a slimmed down version of my [steam-comment-service-bot](https://github.com/3urobeat/steam-comment-service-bot), for users only interested in regularly sending comments with one account to profiles of their friends.  
+If you need more features, please check it out instead.  
+It does way more besides acting as a comment service - it supports hundreds of accounts simultaneously, has advanced connection management features and is updated more regularly.
+
+&nbsp;
+
 **Disclaimer!**  
 > I, the developer, am not responsible and cannot be held liable for what you do with this bot.  
 > Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.  
   
 &nbsp;
 
-## Download:
+## 📝 Download & Setup:
 Click here: [Download](https://github.com/3urobeat/steam-mass-comment-bot/archive/master.zip)  
 Extract the zip and open the `steam-mass-comment-bot` folder.  
   
@@ -34,49 +43,66 @@ To check your version number if you already have node installed, type `node --ve
 
 &nbsp;
 
-## Setup:
+**Login information:**  
 
 Open `logininfo.json` with a text editor and fill in the username and password of your account into the provided brackets.  
+
+If you want to login with a QR Code instead, then set the password to "qrcode".  
+Upon starting the bot a QR Code will be presented, which you can scan using your Steam Mobile App to login.
+
 Save and exit.
 
-**The login data will _only_ be used to leave comments under the profiles and groups set in `config.json` with one of the provided comments in `comments.txt`.**
+&nbsp;
+
+**Configuration:**  
 
 Open `config.json` with a text editor.  
-Put in the profile links or steamID64s you want to comment on into the `profiles` array.  
-Put in the group links or steamID64s you want to comment in into the `groups` array.  
+Put in the URLs, vanities or steamID64s of every profile/group/sharedfile/discussion you want to comment on into the `destinations` array.
   
-Make sure you are following this syntax when filling the arrays:  
+Make sure you are exactly following this syntax, otherwise the config will fail to load:  
 ```json
-"profiles": [
+"destinations": [
 	"ID1",
 	"steamcommunity.com/id/name2",
-	"https://steamcommunity.com/profiles/ID3"
+	"https://steamcommunity.com/profiles/ID3",
+	"3urobeatGroup",
+	"https://steamcommunity.com/app/739630/discussions/0/1750150652078713439",
+	"https://steamcommunity.com/sharedfiles/filedetails/?id=2496710411"
 ]
-```  
+```
 
 Take a look below at *Troubleshooting* if you experience issues.  
 
 If you want to set a custom status and play games when running the bot, fill in the `playingGames` array in the config.  
 The array works like this: `["custom game text", game id, game id]`  
-Empty the array (like this `"playingGames": []`) if the bot should not change your online appearance.  
+Empty the array (like this `"playingGames": []`) if the bot should not play anything.  
   
 If the bot should respond with a message if someone messages you while the bot is running, set a message as `afkMessage`.  
 Empty the brackets (like this `"afkMessage": ""`) to disable the feature.  
 
+&nbsp;
+
+**Advanced-ish settings:**  
 The `commentdelay` value sets the time in ms the bot should wait between comments. I suggest leaving it at the default value.  
 Setting it too low will result in cooldown errors because Steam considers your account as spamming.  
-Should you recieve cooldown errors with the default values, increase the value and try again.  
+Should you receive cooldown errors with the default values, increase the value and try again.  
+
+The `destinationResolveDelay` value determines how long the bot will wait between resolving the ID behind every destination you have set.  
+The default value of 1000ms should be pretty lenient, if you configure A LOT of destinations you might need to increase this though.  
+Just keep the default setting and only change it if you are getting errors on start.
 
 &nbsp;  
 
-## Starting the bot:
-
+## 🚀 Starting the bot:
 Please open a console window or terminal in the current folder.  
-Run the command `npm install --production` and wait for it to complete. This will install al necessary packages for the bot.  
+Run the command `npm install --production` and wait for it to complete. This will install all necessary packages for the bot.  
+Ignore any "x vulnerabilities" messages, these are unavoidable and have no relevance for you.
 
 When done, type `node index.js` to start the bot.  
-It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each profile and group you set in `config.json` after eachother.  
-  
+It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each destination you have set in `config.json`, one after another.  
+
+&nbsp;
+
 If you are on Windows and don't know how to open a console window in the current folder:  
 - Open the folder of the bot with your Explorer  
 - Click on the blue `File` button in in the top left  
@@ -84,15 +110,14 @@ If you are on Windows and don't know how to open a console window in the current
 
 &nbsp;
 
-## Troubleshooting:
-
-If you don't follow the syntax from above you will get an error because the bot is unable to read the file.  
+## 💡 Troubleshooting:
+If you don't follow the syntax from the config setup guide above, you will get an error because the bot is unable to read the file.  
 If you are getting a syntax mistake error then check for these common mistakes:  
 - forgot to add a comma to the end of the line?
 - the very last line must not have a comma (look at the example above)
 - forgot brackets `"` when writing something?  
 
 &nbsp;  
+
 If you get another error or have questions, please [open an issue here](https://github.com/3urobeat/steam-mass-comment-bot/issues/new).  
 Everything that appears in your console/terminal window will also be saved to the `output.txt` file. Please attach the content of your last run to your issue to make it easier for me to troubleshoot.  
-
