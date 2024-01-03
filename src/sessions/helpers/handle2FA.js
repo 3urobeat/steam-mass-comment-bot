@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-01 18:08:35
+ * Last Modified: 2024-01-03 14:41:32
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -16,13 +16,15 @@
 
 
 const SteamSession = require("steam-session"); // Only needed for the enum definitions below
+const qrcode       = require("qrcode");
+const { StartSessionResponse } = require("steam-session/dist/interfaces-external.js"); // eslint-disable-line
 
 const sessionHandler = require("../sessionHandler.js");
 
 
 /**
  * Internal - Handles submitting 2FA code
- * @param {object} res Response object from startWithCredentials() promise
+ * @param {StartSessionResponse} res Response object from startWithCredentials() promise
  */
 sessionHandler.prototype._handle2FA = function(res) {
 
@@ -73,7 +75,11 @@ sessionHandler.prototype._get2FAUserInput = function() {
             logger("info", `[${this.thisbot}] steamGuard input empty, skipping account...`, false, true);
 
             this._resolvePromise(null);
-        } else { // User entered code
+
+        } else { // User entered code or accepted login request via the mobile steam guard app
+
+            if (text == "Login request accepted") return; // We must not call submitSteamGuard() when authenticated event calls stopReadInput("Login request accepted")
+
             logger("info", `[${this.thisbot}] Accepting Steam Guard Code...`, false, true);
             this._acceptSteamGuardCode(text.toString().trim()); // Pass code to accept function
         }
@@ -94,5 +100,24 @@ sessionHandler.prototype._acceptSteamGuardCode = function(code) {
             // Ask user again
             this._get2FAUserInput();
         });
+
+};
+
+
+/**
+ * Handles displaying a QR Code to login using the Steam Mobile App
+ * @param {StartSessionResponse} res Response object from startWithQR() promise
+ */
+sessionHandler.prototype._handleQRCode = function(res) {
+
+    // Display QR Code using qrcode library
+    qrcode.toString(res.qrChallengeUrl, (err, string) => {
+        if (err) {
+            logger("error", `[${this.thisbot}] Failed to display QR Code! Is the URL '${res.qrChallengeUrl}' invalid? ${err}`);
+            return this._resolvePromise(null);
+        }
+
+        logger("info", `[${this.logOnOptions.accountName}] Scan the following QR Code using your Steam Mobile App to start a new session:\n${string}`);
+    });
 
 };

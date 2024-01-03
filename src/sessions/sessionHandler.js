@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-01 18:09:43
+ * Last Modified: 2024-01-03 14:50:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -20,6 +20,7 @@
 const SteamUser    = require("steam-user"); // eslint-disable-line
 const SteamSession = require("steam-session"); // eslint-disable-line
 const nedb         = require("@seald-io/nedb");
+const { StartSessionResponse } = require("steam-session/dist/interfaces-external.js"); // eslint-disable-line
 
 
 /**
@@ -81,8 +82,8 @@ sessionHandler.prototype.getToken = function() { // I'm not allowed to use arrow
 
 
 /**
- * Internal - Handles resolving the getToken() promise
- * @param {string} token The token to resolve with or null on failure
+ * Internal - Handles resolving the getToken() promise and skipping the account if necessary
+ * @param {string} token The token to resolve with or null when account should be skipped
  */
 sessionHandler.prototype._resolvePromise = function(token) {
 
@@ -96,6 +97,7 @@ sessionHandler.prototype._resolvePromise = function(token) {
     }
 
     this.getTokenPromise(token);
+
 };
 
 
@@ -105,18 +107,88 @@ sessionHandler.prototype._resolvePromise = function(token) {
 sessionHandler.prototype._attemptCredentialsLogin = function() {
 
     // Init new session
-    this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient);
+    this.session = new SteamSession.LoginSession(SteamSession.EAuthTokenPlatformType.SteamClient, { httpProxy: this.bot.proxy });
 
     // Attach event listeners
     this._attachEvents();
 
-    // Login with credentials supplied in logOnOptions
-    this.session.startWithCredentials(this.logOnOptions)
-        .then((res) => {
-            if (res.actionRequired) this._handle2FA(res); // Let handle2FA helper handle 2FA if a code is requested
-        })
-        .catch((err) => {
-            if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
-        });
+    // Login with QR Code if password is "qrcode", otherwise with normal credentials
+    if (this.logOnOptions.password == "qrcode") {
+        this.session.startWithQR()
+            .then((res) => {
+                if (res.actionRequired) this._handleQRCode(res); // This *should* always be the case
+            })
+            .catch((err) => {
+                if (err) this._handleQrCodeLoginError(err);
+            });
+    } else {
+        this.session.startWithCredentials(this.logOnOptions)
+            .then((res) => {
+                if (res.actionRequired) this._handle2FA(res); // Let handle2FA helper handle 2FA if a code is requested
+            })
+            .catch((err) => {
+                if (err) this._handleCredentialsLoginError(err); // Let handleCredentialsLoginError helper handle a login error
+            });
+    }
 
 };
+
+
+/* ------------ Reference helper functions to let the IntelliSense know about them ------------ */
+
+/**
+ * Internal: Attaches listeners to all steam-session events we care about
+ */
+sessionHandler.prototype._attachEvents = function() {};
+
+/**
+ * Internal: Handles submitting 2FA code
+ * @param {StartSessionResponse} res Response object from startWithCredentials() promise
+ */
+sessionHandler.prototype._handle2FA = function(res) {}; // eslint-disable-line
+
+/**
+ * Internal: Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
+ */
+sessionHandler.prototype._get2FAUserInput = function() {};
+
+/**
+ * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+ * @param {string} code Input from user
+ */
+sessionHandler.prototype._acceptSteamGuardCode = function(code) {}; // eslint-disable-line
+
+/**
+ * Handles displaying a QR Code to login using the Steam Mobile App
+ * @param {StartSessionResponse} res Response object from startWithQR() promise
+ */
+sessionHandler.prototype._handleQRCode = function(res) {}; // eslint-disable-line
+
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithCredentials()
+ */
+sessionHandler.prototype._handleCredentialsLoginError = function(err) {}; // eslint-disable-line
+
+/**
+ * Helper function to make handling login errors easier
+ * @param {*} err Error thrown by startWithQR()
+ */
+sessionHandler.prototype._handleQrCodeLoginError = function(err) {}; // eslint-disable-line
+
+/**
+ * Internal - Attempts to get a token for this account from tokens.db and checks if it's valid
+ * @param {function(string|null): void} callback Called with `refreshToken` (String) on success or `null` on failure
+ */
+sessionHandler.prototype._getTokenFromStorage = function(callback) {}; // eslint-disable-line
+
+/**
+ * Internal - Saves a new token for this account to tokens.db
+ * @param {string} token The refreshToken to store
+ */
+sessionHandler.prototype._saveTokenToStorage = function(token) {}; // eslint-disable-line
+
+/**
+ * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
+ */
+sessionHandler.prototype.invalidateTokenInStorage = function() {};
