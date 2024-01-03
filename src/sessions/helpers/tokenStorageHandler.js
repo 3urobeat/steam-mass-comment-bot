@@ -4,7 +4,7 @@
  * Created Date: 2022-10-10 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-01 18:09:25
+ * Last Modified: 2024-01-03 14:41:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -85,12 +85,10 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
 
 
 /**
- * External - Removes a token from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
- * @param tokensdb Tokens database instance
- * @param {string} accountName Name of the account to invalidate the token of
+ * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
  */
-module.exports.invalidateTokenInStorage = function(tokensdb, accountName) { // Tokensdb needs to be passed manually atm as calling the function too fast otherwise fails
-    logger("debug", `invalidateTokenInStorage(): Removing refreshToken for accountName '${accountName}' from tokens.db...`);
+sessionHandler.prototype.invalidateTokenInStorage = function() {
+    logger("debug", `[${this.bot.logPrefix}] invalidateTokenInStorage(): Removing refreshToken for accountName '${this.logOnOptions.accountName}' from tokens.db...`);
 
-    tokensdb.removeAsync({ accountName: accountName }, { multi: true });
+    this.tokensdb.removeAsync({ accountName: this.logOnOptions.accountName }, { multi: true });
 };

@@ -1,4 +1,9 @@
 {
+    /*
+        3urobeat's EsLint Config. Requires eslint & eslint-plugin-jsdoc to be installed as devDependencies.
+        https://github.com/3urobeat
+    */
+
     "env": {
         "commonjs": true,
         "es6": true,
@@ -57,6 +62,5 @@
         "jsdoc/require-returns-type": "warn",
         //"jsdoc/require-returns-check": "warn", // Unnecessary when require-returns above is disabled
         "jsdoc/require-returns-description": "warn"
-    },
-    "ignorePatterns": ["src/libraryPatches/*"]
+    }
 }
