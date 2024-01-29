@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:23:29
+ * Last Modified: 2024-01-29 18:18:35
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -180,6 +180,9 @@ module.exports.loadDestinations = function() {
                         type: existingEntry.type
                     });
 
+                    // Resolve if done
+                    if (results.length + failed == config.destinations.length) resolve(results);
+
                     return;
                 }
 
@@ -196,6 +199,7 @@ module.exports.loadDestinations = function() {
                         });
                     }
 
+                    // Resolve if done
                     if (results.length + failed == config.destinations.length) resolve(results);
                 });
 
