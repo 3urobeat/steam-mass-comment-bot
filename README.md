@@ -1,6 +1,6 @@
 <div align="center" markdown=1>
 	<p align="center"><img width=45% src="https://3urobeat.com/comment-bot/steamLogo.png"></p>
-	<strong>Comment with a few clicks under a ton of steam profiles & groups!</strong>
+	<strong>Comment with a few clicks under a ton of steam profiles, groups, sharedfiles & discussions!</strong>
 	<br>See how to set up the bot and customize it below.<br>
 	<p></p>
 </div>
