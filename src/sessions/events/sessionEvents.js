@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:52:30
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:41:35
+ * Last Modified: 2024-10-26 16:44:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -40,7 +40,7 @@ sessionHandler.prototype._attachEvents = function() {
 
 
     this.session.on("error", (err) => { // Failure
-        logger("error", `Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err}`); // Session.accountName is only defined on success
+        logger("error", `[${this.thisbot}] Failed to get a session for account '${this.logOnOptions.accountName}'! Error: ${err.stack ? err.stack : err}`); // Session.accountName is only defined on success
 
         // TODO: When does this event fire? Do I need to do something else?
         // TODO: Retry until advancedconfig.maxLogOnRetries?

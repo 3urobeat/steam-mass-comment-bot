@@ -4,7 +4,7 @@
  * Created Date: 2022-10-10 12:53:20
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:41:27
+ * Last Modified: 2024-10-26 16:44:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -20,12 +20,12 @@ const sessionHandler = require("../sessionHandler.js");
 
 // Helper function which decodes a JsonWebToken - https://stackoverflow.com/a/38552302
 sessionHandler.prototype._decodeJWT = function(token) {
-    let payload = token.split(".")[1];           // Remove header and signature as we only care about the payload
-    let decoded = Buffer.from(payload, "base64"); // Decode
+    const payload = token.split(".")[1];           // Remove header and signature as we only care about the payload
+    const decoded = Buffer.from(payload, "base64"); // Decode
 
     // Try to parse json object
     try {
-        let parsed = JSON.parse(decoded.toString());
+        const parsed = JSON.parse(decoded.toString());
         return parsed;
     } catch (err) {
         logger("err", `Failed to parse JWT from tokens.db! Please report this issue if it keeps occurring! Getting a new session...\nError: ${err}`, true);
@@ -50,11 +50,11 @@ sessionHandler.prototype._getTokenFromStorage = function(callback) {
         // If we still have a token stored then check if it is still valid
         if (doc) {
             // Decode the token we've found
-            let jwtObj = this._decodeJWT(doc.token);
+            const jwtObj = this._decodeJWT(doc.token);
             if (!jwtObj) return callback(null); // Get new session if _decodeJWT() failed
 
             // Define valid until str to use it in log msg
-            let validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
+            const validUntilStr = `${(new Date(jwtObj.exp * 1000)).toISOString().replace(/T/, " ").replace(/\..+/, "")} (GMT time)`;
 
             // Compare expire value (unix timestamp in seconds) to current date
             if (jwtObj.exp * 1000 > Date.now()) {
@@ -88,7 +88,7 @@ sessionHandler.prototype._saveTokenToStorage = function(token) {
  * Remove the token of this account from tokens.db. Intended to be called from the steam-user login error event when an invalid token was used so the next login attempt will create a new one.
  */
 sessionHandler.prototype.invalidateTokenInStorage = function() {
-    logger("debug", `[${this.bot.logPrefix}] invalidateTokenInStorage(): Removing refreshToken for accountName '${this.logOnOptions.accountName}' from tokens.db...`);
+    logger("debug", `[${this.thisbot}] invalidateTokenInStorage(): Removing refreshToken for accountName '${this.logOnOptions.accountName}' from tokens.db...`);
 
     this.tokensdb.removeAsync({ accountName: this.logOnOptions.accountName }, { multi: true });
 };

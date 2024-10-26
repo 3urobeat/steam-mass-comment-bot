@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:47:27
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:50:27
+ * Last Modified: 2024-10-26 16:44:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -18,7 +18,7 @@
 // This sessionHandler module is a modified version from my Steam Comment Service Bot: https://github.com/3urobeat/steam-comment-service-bot
 
 const SteamUser    = require("steam-user"); // eslint-disable-line
-const SteamSession = require("steam-session"); // eslint-disable-line
+const SteamSession = require("steam-session");
 const nedb         = require("@seald-io/nedb");
 const { StartSessionResponse } = require("steam-session/dist/interfaces-external.js"); // eslint-disable-line
 
@@ -90,6 +90,7 @@ sessionHandler.prototype._resolvePromise = function(token) {
     // Skip this account if token is null or stop bot if this is the main account
     if (!token) {
         logger("error", `[${this.thisbot}] Couldn't log in!`);
+
         this.session.cancelLoginAttempt(); // Cancel this login attempt just to be sure
     } else {
         // Save most recent valid token to tokens.db
@@ -111,6 +112,20 @@ sessionHandler.prototype._attemptCredentialsLogin = function() {
 
     // Attach event listeners
     this._attachEvents();
+
+    // Bail if username or password is null
+    if (!this.logOnOptions.accountName || !this.logOnOptions.password) {
+        logger("", "", true);
+
+        if (this.logOnOptions.accountName) {
+            logger("error", `[${this.thisbot}] The account '${this.logOnOptions.accountName}' is missing a password, which is required to login using credentials! Please re-check this 'accounts.txt' entry.`, true);
+        } else {
+            logger("error", `[${this.thisbot}] This account is missing a username or password, which are required to login using credentials! Please re-check your 'accounts.txt' entries.`, true);
+        }
+
+        this._resolvePromise(null);
+        return;
+    }
 
     // Login with QR Code if password is "qrcode", otherwise with normal credentials
     if (this.logOnOptions.password == "qrcode") {
