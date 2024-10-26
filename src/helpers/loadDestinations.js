@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-29 18:18:35
+ * Last Modified: 2024-10-26 17:37:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -15,9 +15,11 @@
  */
 
 
-const config          = require("../../config.json");
+const fs              = require("fs");
 const SteamID         = require("steamid");
 const steamIDResolver = require("steamid-resolver");
+
+const config = require("../../config.json");
 
 
 // This is a slimmed down version of this function from my steam-comment-service-bot: https://github.com/3urobeat/steam-comment-service-bot/blob/master/src/controller/helpers/handleSteamIdResolving.js
@@ -162,10 +164,31 @@ function handleSteamIdResolving(str, callback) {
 module.exports.loadDestinations = function() {
     return new Promise((resolve) => {
 
+        // Load destinations from file
+        let destinations = [];
+
+        if (!fs.existsSync("./destinations.txt")) {
+            resolve([]);
+        } else { // File does seem to exist so now we can try and read it
+            destinations = fs.readFileSync("./destinations.txt", "utf8").split("\n");
+            destinations = destinations.filter(str => str != ""); // Remove empty lines
+
+            if (destinations.length > 0 && destinations[0].startsWith("//Comment")) destinations = destinations.slice(1); // Remove comment from array
+
+            // Check if no proxies were found (can only be the case when useLocalIP is false)
+            if (destinations.length == 0) {
+                logger("", "", true);
+                logger("error", "No destinations set in destinations.txt to comment on! Exiting...", true);
+                return process.exit(1);
+            }
+        }
+
+
+        // Convert any destinations that need to be converted to IDs
         let failed  = 0;
         let results = [];
 
-        config.destinations.forEach((e, i) => {
+        destinations.forEach((e, i) => {
             setTimeout(() => {
 
                 // Check for duplicate entry to avoid unneccessary resolving if possible
@@ -181,7 +204,7 @@ module.exports.loadDestinations = function() {
                     });
 
                     // Resolve if done
-                    if (results.length + failed == config.destinations.length) resolve(results);
+                    if (results.length + failed == destinations.length) resolve(results);
 
                     return;
                 }
@@ -200,7 +223,7 @@ module.exports.loadDestinations = function() {
                     }
 
                     // Resolve if done
-                    if (results.length + failed == config.destinations.length) resolve(results);
+                    if (results.length + failed == destinations.length) resolve(results);
                 });
 
             }, config.destinationResolveDelay * i);
