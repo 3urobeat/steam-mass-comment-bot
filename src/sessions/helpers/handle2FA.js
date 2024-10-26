@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 12:59:31
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:41:32
+ * Last Modified: 2024-10-26 16:44:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -23,12 +23,11 @@ const sessionHandler = require("../sessionHandler.js");
 
 
 /**
- * Internal - Handles submitting 2FA code
+ * Internal: Handles submitting 2FA code
  * @param {StartSessionResponse} res Response object from startWithCredentials() promise
  */
 sessionHandler.prototype._handle2FA = function(res) {
-
-    logger("debug", `[${this.thisbot}] getRefreshToken(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
+    logger("debug", `[${this.thisbot}] _handle2FA(): Received startWithCredentials() actionRequired response. Type: ${res.validActions[0].type} | Detail: ${res.validActions[0].detail}`);
 
     // Get 2FA code/prompt confirmation from user, mentioning the correct source
     switch (res.validActions[0].type) {
@@ -64,8 +63,8 @@ sessionHandler.prototype._handle2FA = function(res) {
 // Helper function to get 2FA code from user and passing it to accept function or skipping account if desired
 sessionHandler.prototype._get2FAUserInput = function() {
 
-    let question = `[${this.logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `;
-    let timeout = 90000;
+    const question = `[${this.logOnOptions.accountName}] Steam Guard Code (leave empty and press ENTER to skip account): `;
+    const timeout = 90000;
 
     // Ask user for code
     logger.readInput(question, timeout, (text) => {
@@ -87,7 +86,10 @@ sessionHandler.prototype._get2FAUserInput = function() {
 };
 
 
-// Helper function to make accepting and re-requesting invalid steam guard codes easier
+/**
+ * Internal: Helper function to make accepting and re-requesting invalid steam guard codes easier
+ * @param {string} code Input from user
+ */
 sessionHandler.prototype._acceptSteamGuardCode = function(code) {
 
     this.session.submitSteamGuardCode(code)
@@ -96,6 +98,14 @@ sessionHandler.prototype._acceptSteamGuardCode = function(code) {
         })
         .catch((err) => { // Invalid code, ask again
             logger("warn", `Your code seems to be wrong, please try again or skip this account! ${err}`);
+
+            // Skip account if account got temp blocked
+            if (err.eresult == SteamSession.EResult.RateLimitExceeded || err.eresult == SteamSession.EResult.AccountLoginDeniedThrottle || err.eresult == SteamSession.EResult.AccessDenied) {
+                logger("error", `[${this.thisbot}] Steam rejected our login and applied a temporary login cooldown! ${err}`);
+                this.session.cancelLoginAttempt();
+                this._resolvePromise(null);
+                return;
+            }
 
             // Ask user again
             this._get2FAUserInput();
@@ -117,7 +127,10 @@ sessionHandler.prototype._handleQRCode = function(res) {
             return this._resolvePromise(null);
         }
 
-        logger("info", `[${this.logOnOptions.accountName}] Scan the following QR Code using your Steam Mobile App to start a new session:\n${string}`);
+        logger("info", `[${this.logOnOptions.accountName}] Scan the following QR Code using your Steam Mobile App to start a new session:\n${string}`, true);
+
+        // Quick hack to prevent other messages from logging and pushing the QRCode up - start an empty readInput request which will be stopped by the authenticated event handler
+        logger.readInput("", 90000, () => {});
     });
 
 };

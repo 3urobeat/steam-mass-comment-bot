@@ -4,7 +4,7 @@
  * Created Date: 2022-10-09 13:22:39
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 14:41:29
+ * Last Modified: 2024-10-26 16:44:24
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -27,10 +27,11 @@ sessionHandler.prototype._handleCredentialsLoginError = function(err) {
 
     // Log error message
     logger("", "", true);
-    logger("error", `[${this.thisbot}] Couldn't log in. ${err} (${err.eresult})`, true);
+    logger("error", `[${this.thisbot}] Couldn't log in! '${err}' (${err.eresult})`, true);
+    logger("debug", err.stack, true);
 
     // Add additional messages for specific errors to hopefully help the user diagnose the cause
-    if (err.eresult == EResult.InvalidPassword) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try leaving the shared_secret field empty and check username & password.`, true);
+    if (err.eresult == EResult.InvalidPassword) logger("", `Note: The error "InvalidPassword" (${err.eresult}) can also be caused by a wrong Username or shared_secret!\n      Try omitting the shared_secret (if you provided one) and check the username & password of '${this.logOnOptions.accountName}' in account.txt!`, true);
 
     // Skips account
     this._resolvePromise(null);
@@ -45,6 +46,7 @@ sessionHandler.prototype._handleCredentialsLoginError = function(err) {
 sessionHandler.prototype._handleQrCodeLoginError = function(err) {
 
     logger("error", `[${this.thisbot}] Failed to start a QR-Code session! Are you having connectivity issues to Steam? ${err}`);
+    logger("debug", err.stack, true);
 
     this._resolvePromise(null); // Skips account
 
