@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-01-03 16:15:08
+ * Last Modified: 2024-10-26 16:58:03
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -24,8 +24,9 @@ const SteamCommunity = require("steamcommunity");
 const SteamID        = require("steamid");
 const EResult        = SteamUser.EResult;
 
-const sessionHandler = require("./sessions/sessionHandler.js");
-const data           = require("./data.json");
+const { checkForUpdate } = require("./helpers/checkForUpdate.js");
+const sessionHandler     = require("./sessions/sessionHandler.js");
+const data               = require("./data.json");
 
 let config;
 let logininfo;
@@ -59,6 +60,9 @@ module.exports.run = async () => {
     logger("", "\n", true);
     logger("info", `Starting steam-mass-comment-bot v${data.version} by 3urobeat`, true);
     logger("", "---------------------------------------------------------\n", true);
+
+    // Check for an update
+    checkForUpdate();
 
 
     // Try loading files and show custom error message if unable to do so
