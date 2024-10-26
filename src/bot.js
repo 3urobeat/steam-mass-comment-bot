@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-26 16:58:03
+ * Last Modified: 2024-10-26 17:37:27
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -89,13 +89,6 @@ module.exports.run = async () => {
     }
 
 
-    // Exit if no destinations are set
-    if (config.destinations.length == 0) {
-        logger("error", "No destinations set in config to comment on! Exiting...");
-        process.exit(1);
-    }
-
-
     // Start logging in
     let session;
 
@@ -123,7 +116,7 @@ module.exports.run = async () => {
 
 
         // Get IDs
-        logger("info", "Getting profile & group ids from URLs in config...", false, true, logger.animation("loading"));
+        logger("info", "Loading comment destinations from destinations.txt...", false, true, logger.animation("loading"));
 
         const { loadDestinations } = require("./helpers/loadDestinations.js");
         const destinations = await loadDestinations();

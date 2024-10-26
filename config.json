@@ -1,5 +1,4 @@
 {
-    "destinations": [],
     "destinationResolveDelay": 1000,
     "commentdelay": 7500,
     "playingGames": ["Idling", 440, 730],
