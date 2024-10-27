@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-05-22 23:04:51
+ * Last Modified: 2024-10-27 10:38:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -91,8 +91,8 @@ module.exports.comment = async function(dest, quotes, community, callback) {
     }
 
     // DEBUG: Uncomment to disable commenting
-    //postComment = (a, callback) => callback(null);
-    //commentArgs = { quote: null };
+    // postComment = (a, callback) => callback(null);
+    // commentArgs = { quote: null };
 
     // Get random quote
     commentArgs.quote = randomstring(quotes);

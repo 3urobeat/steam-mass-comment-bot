@@ -27,7 +27,7 @@ const EDiscussionType = {
  */
 SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
     // Construct object holding all the data we can scrape
-    let discussion = {
+    const discussion = {
         id: null,
         type: null,
         appID: null,
@@ -54,7 +54,7 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
             /* --------------------- Preprocess output --------------------- */
 
             // Load output into cheerio to make parsing easier
-            let $ = Cheerio.load(body);
+            const $ = Cheerio.load(body);
 
             // Get breadcrumbs once. Depending on the type of discussion, it either uses "forum" or "group" breadcrumbs
             let breadcrumbs = $(".forum_breadcrumbs").children();
@@ -78,7 +78,7 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
 
             // Get appID from breadcrumbs if this discussion is associated to one
             if (discussion.type == EDiscussionType.App) {
-                let appIdHref = breadcrumbs[0].attribs["href"].split("/");
+                const appIdHref = breadcrumbs[0].attribs["href"].split("/");
 
                 discussion.appID = appIdHref[appIdHref.length - 1];
             }
@@ -97,7 +97,7 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
 
 
             // Get id, gidforum and topicOwner. The first is used in the URL itself, the other two only in post requests
-            let gids = $(".forum_paging > .forum_paging_controls").attr("id").split("_");
+            const gids = $(".forum_paging > .forum_paging_controls").attr("id").split("_");
 
             discussion.id = gids[4];
             discussion.gidforum = gids[3];
@@ -105,7 +105,7 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
 
 
             // Find postedDate and convert to timestamp
-            let posted = $(".topicstats > .topicstats_label:contains(\"Date Posted:\")").next().text();
+            const posted = $(".topicstats > .topicstats_label:contains(\"Date Posted:\")").next().text();
 
             discussion.postedDate = Helpers.decodeSteamTime(posted.trim());
 
@@ -120,10 +120,10 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
 
 
             // Find comment marked as answer
-            let hasAnswer = $(".commentthread_answer_bar");
+            const hasAnswer = $(".commentthread_answer_bar");
 
             if (hasAnswer.length != 0) {
-                let answerPermLink = hasAnswer.next().children(".forum_comment_permlink").text().trim();
+                const answerPermLink = hasAnswer.next().children(".forum_comment_permlink").text().trim();
 
                 // Convert comment id to number, remove hashtag and subtract by 1 to make it an index
                 discussion.answerCommentIndex = Number(answerPermLink.replace("#", "")) - 1;
@@ -131,7 +131,7 @@ SteamCommunity.prototype.getSteamDiscussion = function(url, callback) {
 
 
             // Find author and convert to SteamID object
-            let authorLink = $(".authorline > .forum_op_author").attr("href");
+            const authorLink = $(".authorline > .forum_op_author").attr("href");
 
             Helpers.resolveVanityURL(authorLink, (err, data) => { // This request takes <1 sec
                 if (err) {
@@ -225,7 +225,7 @@ const ESharedFileType = {
  */
 SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
     // Construct object holding all the data we can scrape
-    let sharedfile = {
+    const sharedfile = {
         id: sharedFileId,
         type: null,
         appID: null,
@@ -253,12 +253,12 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
             /* --------------------- Preprocess output --------------------- */
 
             // Load output into cheerio to make parsing easier
-            let $ = Cheerio.load(body);
+            const $ = Cheerio.load(body);
 
             // Dynamically map detailsStatsContainerLeft to detailsStatsContainerRight in an object to make readout easier. It holds size, post date and resolution.
-            let detailsStatsObj = {};
-            let detailsLeft     = $(".detailsStatsContainerLeft").children();
-            let detailsRight    = $(".detailsStatsContainerRight").children();
+            const detailsStatsObj = {};
+            const detailsLeft     = $(".detailsStatsContainerLeft").children();
+            const detailsRight    = $(".detailsStatsContainerRight").children();
 
             Object.keys(detailsLeft).forEach((e) => { // Dynamically get all details. Don't hardcore so that this also works for guides.
                 if (isNaN(e)) {
@@ -269,8 +269,8 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
             });
 
             // Dynamically map stats_table descriptions to values. This holds Unique Visitors and Current Favorites
-            let statsTableObj = {};
-            let statsTable    = $(".stats_table").children();
+            const statsTableObj = {};
+            const statsTable    = $(".stats_table").children();
 
             Object.keys(statsTable).forEach((e) => {
                 if (isNaN(e)) {
@@ -293,7 +293,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
             // Find postDate and convert to timestamp
-            let posted = detailsStatsObj["Posted"] || null; // Set to null if "posted" could not be found as Steam translates dates and parsing it below will return a wrong result
+            const posted = detailsStatsObj["Posted"] || null; // Set to null if "posted" could not be found as Steam translates dates and parsing it below will return a wrong result
 
             if (posted) {
                 sharedfile.postDate = Helpers.decodeSteamTime(posted.trim()); // Only parse if posted is defined to avoid errors
@@ -317,7 +317,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
             // Find upvoteCount. We can't use ' || null' here as Number("0") casts to false
-            let upvoteCount = $("#VotesUpCountContainer > #VotesUpCount").text();
+            const upvoteCount = $("#VotesUpCountContainer > #VotesUpCount").text();
 
             if (upvoteCount) {
                 sharedfile.upvoteCount = Number(upvoteCount);
@@ -325,7 +325,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
             // Find numRatings if this is a guide as they use a different voting system
-            let numRatings = $(".ratingSection > .numRatings").text().replace(" ratings", "");
+            const numRatings = $(".ratingSection > .numRatings").text().replace(" ratings", "");
 
             sharedfile.guideNumRatings = Number(numRatings) || null; // Set to null if not a guide or if the guide does not have enough ratings to show a value
 
@@ -336,7 +336,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
             // Determine type by looking at the second breadcrumb. Find the first separator as it has a unique name and go to the next element which holds our value of interest
-            let breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0) || $(".breadcrumbs").get(0).children[1]; // Some artworks only have one breadcrumb like "username's Artwork" so let's check that as a backup
+            const breadcrumb = $(".breadcrumbs > .breadcrumb_separator").next().get(0) || $(".breadcrumbs").get(0).children[1]; // Some artworks only have one breadcrumb like "username's Artwork" so let's check that as a backup
 
             if (breadcrumb) { // If neither could be found then leave type at null
                 if (breadcrumb.children[0].data.includes("Screenshot")) {
@@ -354,7 +354,7 @@ SteamCommunity.prototype.getSteamSharedFile = function(sharedFileId, callback) {
 
 
             // Find owner profile link, convert to steamID64 using SteamIdResolver lib and create a SteamID object
-            let ownerHref = $(".friendBlockLinkOverlay").attr()["href"];
+            const ownerHref = $(".friendBlockLinkOverlay").attr()["href"];
 
             Helpers.resolveVanityURL(ownerHref, (err, data) => { // This request takes <1 sec
                 if (err) {
@@ -465,7 +465,7 @@ helpers.resolveVanityURL = function(url, callback) {
                 return;
             }
 
-            let steamID64 = parsed.profile.steamID64[0];
+            const steamID64 = parsed.profile.steamID64[0];
 
             let vanityURL;
 

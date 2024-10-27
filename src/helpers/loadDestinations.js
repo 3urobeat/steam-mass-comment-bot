@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 15:28:34
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-26 17:37:27
+ * Last Modified: 2024-10-27 10:38:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -84,7 +84,7 @@ function handleSteamIdResolving(str, callback) {
                 if (!res) return callback("The specified sharedfile could not be found", null, null);
 
                 // Cut domain away
-                let split = str.split("/");
+                const split = str.split("/");
                 if (split[split.length - 1] == "") split.pop(); // Remove trailing slash (which is now a space because of split("/"))
 
                 str = split[split.length - 1].replace("?id=", "");
@@ -117,7 +117,7 @@ function handleSteamIdResolving(str, callback) {
                                     logger("debug", "handleSteamIdResolving: the provided id seems to be a sharedfile id! Returning sharedfileID...");
 
                                     if (str.includes("steamcommunity.com/")) { // Check if full URL was provided and cut domain away
-                                        let split = str.split("/");
+                                        const split = str.split("/");
                                         if (split[split.length - 1] == "") split.pop(); // Remove trailing slash (which is now a space because of split("/"))
 
                                         str = split[split.length - 1].replace("?id=", "");
@@ -186,13 +186,13 @@ module.exports.loadDestinations = function() {
 
         // Convert any destinations that need to be converted to IDs
         let failed  = 0;
-        let results = [];
+        const results = [];
 
         destinations.forEach((e, i) => {
             setTimeout(() => {
 
                 // Check for duplicate entry to avoid unneccessary resolving if possible
-                let existingEntry = results.find((f) => f.raw == e);
+                const existingEntry = results.find((f) => f.raw == e);
 
                 if (existingEntry) {
                     logger("debug", `loadDestination(): Found duplicate entry for '${e}', using it instead of resolving entry again...`);
