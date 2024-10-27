@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-26 17:37:27
+ * Last Modified: 2024-10-27 10:38:29
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -69,14 +69,14 @@ module.exports.run = async () => {
     try {
         config = require("../config.json");
     } catch (err) {
-        logger("error", "Error trying to read config.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly as explained here: https://github.com/3urobeat/steam-mass-comment-bot#setup. Exiting...", true);
+        logger("error", `Failed to read config.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly as explained here: https://github.com/3urobeat/steam-mass-comment-bot#setup.\n        ${err}\n        Exiting...`, true);
         process.exit(1);
     }
 
     try {
         logininfo = require("../logininfo.json");
     } catch (err) {
-        logger("error", "Error trying to read logininfo.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly. Exiting...", true);
+        logger("error", `Failed to read logininfo.json! Did you make a syntax mistake?\n        Please follow the syntax of the template exactly.\n        ${err}\n        Exiting...`, true);
         process.exit(1);
     }
 
@@ -92,11 +92,14 @@ module.exports.run = async () => {
     // Start logging in
     let session;
 
+    /**
+     * Attempts to log this account in
+     */
     async function login() {
         logger("info", "Logging in...", false, false);
 
         session   = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
-        let token = await session.getToken();
+        const token = await session.getToken();
 
         if (!token) process.exit(1); // Exit if no token could be retrieved
 
@@ -155,7 +158,7 @@ module.exports.run = async () => {
             // Start commenting
             const { comment } = require("./helpers/comment.js");
 
-            let failed = [];
+            const failed = [];
             let http429err = false;
 
             destinations.forEach((e, i) => {
@@ -207,10 +210,10 @@ module.exports.run = async () => {
 
     // Respond with afkMessage if enabled in config
     bot.chat.on("friendMessage", (msg) => {
-        let message = msg.message_no_bbcode;
-        let steamID = msg.steamid_friend;
-        let steamID64 = new SteamID(String(steamID)).getSteamID64();
-        let username = bot.users[steamID64].player_name;
+        const message = msg.message_no_bbcode;
+        const steamID = msg.steamid_friend;
+        const steamID64 = new SteamID(String(steamID)).getSteamID64();
+        const username = bot.users[steamID64].player_name;
 
         logger("info", `Friend message from '${username}' (${steamID64}): ${message}`);
 
