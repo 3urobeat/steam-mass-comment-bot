@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![nodejs](https://img.shields.io/badge/node.js-v14-brightgreen)](https://nodejs.org/)
+[![nodejs](https://img.shields.io/badge/node.js-v16-brightgreen)](https://nodejs.org/)
 [![Star](https://img.shields.io/badge/-Give%20this%20repo%20a%20star!-yellow)](https://github.com/3urobeat/steam-mass-comment-bot)
 [![Steam Group](https://img.shields.io/badge/Steam%20Group-Join!-blue)](https://steamcommunity.com/groups/3urobeatGroup)
 [![Donate](https://img.shields.io/badge/Donate-%241-orange)](https://github.com/sponsors/3urobeat)
@@ -19,7 +19,7 @@
 
 &nbsp;
 
-## ✨ **Introduction**  
+## ✨ Introduction:
 This is a simple Steam Comment Bot to send comments with \*one\* account to \*many\* profiles, groups, sharedfiles or discussions.  
 
 This project is a slimmed down version of my [steam-comment-service-bot](https://github.com/3urobeat/steam-comment-service-bot), for users only interested in regularly sending comments with one account to profiles of their friends.  
@@ -28,9 +28,9 @@ It does way more besides acting as a comment service - it supports hundreds of a
 
 &nbsp;
 
-**Disclaimer!**  
-> I, the developer, am not responsible and cannot be held liable for what you do with this bot.  
-> Please don't misuse this bot by spamming or posting malicious comments. Your accounts can get banned from Steam if you do that.  
+> [!WARNING]
+> I, 3urobeat (the developer), am not responsible and cannot be held liable for any action the operator/user of this bot uses it for.  
+> By using this application, you agree to using it responsibly!  
   
 &nbsp;
 
@@ -38,7 +38,7 @@ It does way more besides acting as a comment service - it supports hundreds of a
 Click here: [Download](https://github.com/3urobeat/steam-mass-comment-bot/archive/master.zip)  
 Extract the zip and open the `steam-mass-comment-bot` folder.  
   
-You need to have at least node.js version 14.15.0 installed: [Download](https://nodejs.org)  
+You need to have at least node.js version 16.0.0 installed: [Download](https://nodejs.org)  
 To check your version number if you already have node installed, type `node --version` in your console or terminal.  
 
 &nbsp;
@@ -54,31 +54,35 @@ Save and exit.
 
 &nbsp;
 
-**Configuration:**  
+**Destinations:**  
+Open the text file `destinations.txt` with a text editor.  
+Put in the URLs, vanities or steamID64s of every profile/group/sharedfile/discussion you want to comment on, one destination per line.
 
-Open `config.json` with a text editor.  
-Put in the URLs, vanities or steamID64s of every profile/group/sharedfile/discussion you want to comment on into the `destinations` array.
-  
-Make sure you are exactly following this syntax, otherwise the config will fail to load:  
-```json
-"destinations": [
-	"ID1",
-	"steamcommunity.com/id/name2",
-	"https://steamcommunity.com/profiles/ID3",
-	"3urobeatGroup",
-	"https://steamcommunity.com/app/739630/discussions/0/1750150652078713439",
-	"https://steamcommunity.com/sharedfiles/filedetails/?id=2496710411"
-]
+Example:
+```
+"ID1",
+"steamcommunity.com/id/name2",
+"https://steamcommunity.com/profiles/ID3",
+"3urobeatGroup",
+"https://steamcommunity.com/app/739630/discussions/0/1750150652078713439",
+"https://steamcommunity.com/sharedfiles/filedetails/?id=2496710411"
 ```
 
-Take a look below at *Troubleshooting* if you experience issues.  
+
+&nbsp;
+
+**Configuration:**  
+Open `config.json` with a text editor.  
 
 If you want to set a custom status and play games when running the bot, fill in the `playingGames` array in the config.  
 The array works like this: `["custom game text", game id, game id]`  
 Empty the array (like this `"playingGames": []`) if the bot should not play anything.  
+Remove the first argument and only provide game ids if you don't want to display a "Non-Steam game" text on your profile.
   
 If the bot should respond with a message if someone messages you while the bot is running, set a message as `afkMessage`.  
 Empty the brackets (like this `"afkMessage": ""`) to disable the feature.  
+
+Take a look below at *Troubleshooting* if you experience issues.  
 
 &nbsp;
 
@@ -95,11 +99,11 @@ Just keep the default setting and only change it if you are getting errors on st
 
 ## 🚀 Starting the bot:
 Please open a console window or terminal in the current folder.  
-Run the command `npm install --production` and wait for it to complete. This will install all necessary packages for the bot.  
+Run the command `npm install --omit=dev` and wait for it to complete. This will install all necessary packages for the bot.  
 Ignore any "x vulnerabilities" messages, these are unavoidable and have no relevance for you.
 
 When done, type `node index.js` to start the bot.  
-It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each destination you have set in `config.json`, one after another.  
+It should log into your account, ask for a Steam Guard code if necessary, and start commenting on each destination you have set, one after another.  
 
 &nbsp;
 
