@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-11-02 12:06:06
+ * Last Modified: 2024-11-02 12:10:20
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -25,6 +25,7 @@ const SteamID        = require("steamid");
 const EResult        = SteamUser.EResult;
 
 const { checkForUpdate } = require("./helpers/checkForUpdate.js");
+const handleFamilyView   = require("./helpers/handleFamilyView.js");
 const sessionHandler     = require("./sessions/sessionHandler.js");
 const data               = require("./data.json");
 
@@ -119,6 +120,12 @@ module.exports.run = async () => {
     // Set cookies and start loading destinations
     bot.on("webSession", async (sessionID, cookies) => {
         community.setCookies(cookies);
+
+
+        // Check if account has family view enabled and unlock it
+        if (await handleFamilyView.checkForFamilyView(community)) {
+            logger("warn", "Family View is enabled! Please provide your unlock code to allow commenting!");
+        }
 
 
         // Start playing games if enabled
