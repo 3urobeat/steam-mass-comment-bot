@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-11-02 12:56:01
+ * Last Modified: 2024-11-02 15:08:38
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -21,6 +21,7 @@
 const logger         = require("output-logger");
 const SteamUser      = require("steam-user");
 const SteamCommunity = require("steamcommunity");
+const SteamTotp      = require("steam-totp");
 const SteamID        = require("steamid");
 const EResult        = SteamUser.EResult;
 
@@ -99,7 +100,13 @@ module.exports.run = async () => {
     async function login() {
         logger("info", "Logging in...", false, false);
 
-        session     = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
+        // Generate auth code from sharedSecret if one was provided
+        if (logininfo.sharedSecret) {
+            logger("info", "Found sharedSecret, generating AuthCode and adding it to logOnOptions...");
+            logininfo.steamGuardCode = SteamTotp.generateAuthCode(logininfo.sharedSecret);
+        }
+
+        session     = new sessionHandler(bot, logininfo.accountName, 0, logininfo);
         const token = await session.getToken();
 
         if (!token) process.exit(1); // Exit if no token could be retrieved

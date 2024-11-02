@@ -1,4 +1,5 @@
 {
 	"accountName": "",
-	"password": ""
+	"password": "",
+	"sharedSecret": ""
 }
