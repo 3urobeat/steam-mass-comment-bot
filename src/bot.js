@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-11-02 12:10:20
+ * Last Modified: 2024-11-02 12:56:01
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -123,8 +123,14 @@ module.exports.run = async () => {
 
 
         // Check if account has family view enabled and unlock it
+        logger("info", "Checking if this account has family view enabled...", false, true, logger.animation("loading"));
+
         if (await handleFamilyView.checkForFamilyView(community)) {
-            logger("warn", "Family View is enabled! Please provide your unlock code to allow commenting!");
+            logger("warn", "It appears that this account has family view enabled! Please provide your unlock code to allow commenting!\n");
+
+            await handleFamilyView.unlockFamilyView(community);
+        } else {
+            logger("info", "Account does not seem to have family view enabled. Proceeding...", false, true);
         }
 
 
