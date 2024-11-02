@@ -50,6 +50,9 @@ Open `logininfo.json` with a text editor and fill in the username and password o
 If you want to login with a QR Code instead, then set the password to "qrcode".  
 Upon starting the bot a QR Code will be presented, which you can scan using your Steam Mobile App to login.
 
+If you have a shared secret (used to "bypass" Steam Guard Code), you may provide it at `sharedSecret`.  
+If not, leave the brackets empty like default. This feature is entirely optional.
+
 Save and exit.
 
 &nbsp;
