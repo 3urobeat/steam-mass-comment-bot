@@ -4,7 +4,7 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-27 10:38:29
+ * Last Modified: 2024-11-02 12:06:06
  * Modified By: 3urobeat
  *
  * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
@@ -98,7 +98,7 @@ module.exports.run = async () => {
     async function login() {
         logger("info", "Logging in...", false, false);
 
-        session   = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
+        session     = new sessionHandler(bot, logininfo.accountName, 0, { accountName: logininfo.accountName, password: logininfo.password });
         const token = await session.getToken();
 
         if (!token) process.exit(1); // Exit if no token could be retrieved
@@ -110,9 +110,16 @@ module.exports.run = async () => {
 
 
     // Attach steam-user loggedOn event
-    bot.on("loggedOn", async () => {
+    bot.on("loggedOn", () => {
         logger("", "", true);
         logger("info", "Account logged in!");
+    });
+
+
+    // Set cookies and start loading destinations
+    bot.on("webSession", async (sessionID, cookies) => {
+        community.setCookies(cookies);
+
 
         // Start playing games if enabled
         if (config.playingGames.length > 0) bot.gamesPlayed(config.playingGames);
@@ -198,13 +205,6 @@ module.exports.run = async () => {
             });
 
         });
-
-    });
-
-
-    // Set cookies to be able to comment later
-    bot.on("webSession", (sessionID, cookies) => {
-        community.setCookies(cookies);
     });
 
 
