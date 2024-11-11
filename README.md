@@ -63,12 +63,12 @@ Put in the URLs, vanities or steamID64s of every profile/group/sharedfile/discus
 
 Example:
 ```
-"ID1",
-"steamcommunity.com/id/name2",
-"https://steamcommunity.com/profiles/ID3",
-"3urobeatGroup",
-"https://steamcommunity.com/app/739630/discussions/0/1750150652078713439",
-"https://steamcommunity.com/sharedfiles/filedetails/?id=2496710411"
+ID1
+steamcommunity.com/id/name2
+https://steamcommunity.com/profiles/ID3
+3urobeatGroup
+https://steamcommunity.com/app/739630/discussions/0/1750150652078713439
+https://steamcommunity.com/sharedfiles/filedetails/?id=2496710411
 ```
 
 
