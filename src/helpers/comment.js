@@ -4,10 +4,10 @@
  * Created Date: 2022-01-23 16:32:05
  * Author: 3urobeat
  *
- * Last Modified: 2024-10-27 10:38:29
+ * Last Modified: 2025-06-25 20:20:36
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,13 +16,14 @@
 
 
 const SteamCommunity = require("steamcommunity"); //eslint-disable-line
+const { EIdTypes } = require("./loadDestinations.js");
 
 const randomstring = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 
 /**
  * Comments on a destination
- * @param {{ raw: string, processed: string, type: "profile" | "group" | "sharedfile" | "discussion" }} dest The destination to comment on
+ * @param {{ raw: string, processed: string, type: EIdTypes }} dest The destination to comment on
  * @param {Array} quotes Array of quotes
  * @param {SteamCommunity} community The SteamCommunity instance
  * @param {function(any | null): void} callback Called on completion with `null` on success or the error returned by SteamCommunity
@@ -84,6 +85,12 @@ module.exports.comment = async function(dest, quotes, community, callback) {
                     });
                 });
             })();
+            break;
+        case "review":
+            idArr = dest.processed.split("/");
+
+            postComment =  community.postReviewComment;
+            commentArgs = { receiverSteamID64: idArr[0], appID: idArr[1], quote: null };
             break;
         default:
             logger("error", `Unsupported destination type '${dest.type}' for entry '${dest.raw}'! Skipping...`);
