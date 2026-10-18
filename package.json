@@ -30,5 +30,8 @@
         "eslint-plugin-jsdoc": "^65.3.11",
         "globals": "^17.13.0",
         "tsd-jsdoc": "^2.5.0"
+    },
+    "allowScripts": {
+        "protobufjs": true
     }
 }
