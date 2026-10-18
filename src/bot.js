@@ -4,10 +4,10 @@
  * Created Date: 2022-01-23 13:30:05
  * Author: 3urobeat
  *
- * Last Modified: 2025-06-25 19:23:43
+ * Last Modified: 2026-10-18 10:59:24
  * Modified By: 3urobeat
  *
- * Copyright (c) 2022 - 2025 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2022 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -20,7 +20,7 @@
 
 const logger         = require("output-logger");
 const SteamUser      = require("steam-user");
-const SteamCommunity = require("steamcommunity");
+const SteamCommunity = require("@3urobeat/steamcommunity");
 const SteamTotp      = require("steam-totp");
 const SteamID        = require("steamid");
 const EResult        = SteamUser.EResult;
@@ -53,9 +53,6 @@ module.exports.run = async () => {
 
     const bot       = new SteamUser({ renewRefreshTokens: true });
     const community = new SteamCommunity();
-
-    // Load my library patches
-    require("./helpers/libraryPatches.js");
 
 
     // Print startup messages

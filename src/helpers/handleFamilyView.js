@@ -4,10 +4,10 @@
  * Created Date: 2024-10-31 15:20:13
  * Author: 3urobeat
  *
- * Last Modified: 2024-11-02 13:27:52
+ * Last Modified: 2026-10-18 10:58:56
  * Modified By: 3urobeat
  *
- * Copyright (c) 2024 3urobeat <https://github.com/3urobeat>
+ * Copyright (c) 2024 - 2026 3urobeat <https://github.com/3urobeat>
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -15,7 +15,7 @@
  */
 
 
-const { default: SteamCommunity } = require("steamcommunity"); // eslint-disable-line
+const { default: SteamCommunity } = require("@3urobeat/steamcommunity"); // eslint-disable-line
 
 
 /**
